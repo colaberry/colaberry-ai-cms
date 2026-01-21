@@ -126,6 +126,7 @@ license.txt
 exports
 .strapi
 dist
+data/
 build
 .strapi-updater.json
 .strapi-cloud.json
