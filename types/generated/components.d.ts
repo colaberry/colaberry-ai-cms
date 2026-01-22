@@ -11,6 +11,20 @@ export interface SharedMedia extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedPodcastDistribution extends Struct.ComponentSchema {
+  collectionName: 'components_shared_podcast_distributions';
+  info: {
+    displayName: 'Podcast Distribution';
+  };
+  attributes: {
+    applePodcastUrl: Schema.Attribute.String;
+    spotifyUrl: Schema.Attribute.String;
+    substackUrl: Schema.Attribute.String;
+    twitterUrl: Schema.Attribute.String;
+    youtubeUrl: Schema.Attribute.String;
+  };
+}
+
 export interface SharedQuote extends Struct.ComponentSchema {
   collectionName: 'components_shared_quotes';
   info: {
@@ -66,6 +80,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'shared.media': SharedMedia;
+      'shared.podcast-distribution': SharedPodcastDistribution;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;
       'shared.seo': SharedSeo;
