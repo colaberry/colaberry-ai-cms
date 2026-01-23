@@ -696,6 +696,7 @@ export interface ApiPodcastEpisodePodcastEpisode
       'api::podcast-episode.podcast-episode'
     > &
       Schema.Attribute.Private;
+    platformLinks: Schema.Attribute.Component<'shared.platform-link', true>;
     podcastStatus: Schema.Attribute.Enumeration<['draft', 'published']> &
       Schema.Attribute.DefaultTo<'draft'>;
     publishedAt: Schema.Attribute.DateTime;

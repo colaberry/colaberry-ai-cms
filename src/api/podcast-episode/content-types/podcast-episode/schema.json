@@ -58,6 +58,11 @@
     },
     "transcript": {
       "type": "richtext"
+    },
+    "platformLinks": {
+      "type": "component",
+      "component": "shared.platform-link",
+      "repeatable": true
     }
   }
 }
