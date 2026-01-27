@@ -20,14 +20,34 @@
       "targetField": "title",
       "required": true
     },
+    "publishedDate": {
+      "type": "date"
+    },
     "description": {
       "type": "blocks"
     },
+    "transcript": {
+      "type": "richtext"
+    },
+    "podcastStatus": {
+      "type": "enumeration",
+      "default": "draft",
+      "enum": [
+        "draft",
+        "published"
+      ]
+    },
+    "buzzsproutEpisodeId": {
+      "type": "string"
+    },
+    "buzzsproutEmbedCode": {
+      "type": "string"
+    },
+    "audioUrl": {
+      "type": "string"
+    },
     "episodeNumber": {
       "type": "integer"
-    },
-    "publishedDate": {
-      "type": "date"
     },
     "duration": {
       "type": "string"
@@ -42,27 +62,22 @@
         "audios"
       ]
     },
-    "buzzsproutEpisodeId": {
-      "type": "string"
-    },
-    "audioUrl": {
-      "type": "string"
-    },
-    "podcastStatus": {
-      "type": "enumeration",
-      "default": "draft",
-      "enum": [
-        "draft",
-        "published"
-      ]
-    },
-    "transcript": {
-      "type": "richtext"
-    },
     "platformLinks": {
       "type": "component",
       "component": "shared.platform-link",
       "repeatable": true
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "podcast_episodes"
+    },
+    "companies": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::company.company",
+      "mappedBy": "podcast_episodes"
     }
   }
 }

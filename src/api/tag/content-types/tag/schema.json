@@ -22,6 +22,12 @@
     },
     "description": {
       "type": "blocks"
+    },
+    "podcast_episodes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::podcast-episode.podcast-episode",
+      "mappedBy": "tags"
     }
   }
 }

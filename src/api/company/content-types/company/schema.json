@@ -32,6 +32,12 @@
     },
     "website": {
       "type": "string"
+    },
+    "podcast_episodes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::podcast-episode.podcast-episode",
+      "inversedBy": "companies"
     }
   }
 }

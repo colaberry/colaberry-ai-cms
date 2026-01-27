@@ -626,6 +626,10 @@ export interface ApiCompanyCompany extends Struct.CollectionTypeSchema {
       true
     >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    podcast_episodes: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::podcast-episode.podcast-episode'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -680,7 +684,9 @@ export interface ApiPodcastEpisodePodcastEpisode
   };
   attributes: {
     audioUrl: Schema.Attribute.String;
+    buzzsproutEmbedCode: Schema.Attribute.String;
     buzzsproutEpisodeId: Schema.Attribute.String;
+    companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
     coverImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
@@ -702,6 +708,7 @@ export interface ApiPodcastEpisodePodcastEpisode
     publishedAt: Schema.Attribute.DateTime;
     publishedDate: Schema.Attribute.Date;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     transcript: Schema.Attribute.RichText;
     updatedAt: Schema.Attribute.DateTime;
@@ -729,6 +736,10 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    podcast_episodes: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::podcast-episode.podcast-episode'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
