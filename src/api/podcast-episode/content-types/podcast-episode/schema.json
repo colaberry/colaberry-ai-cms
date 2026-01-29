@@ -41,7 +41,7 @@
       "type": "string"
     },
     "buzzsproutEmbedCode": {
-      "type": "string"
+      "type": "text"
     },
     "audioUrl": {
       "type": "string"

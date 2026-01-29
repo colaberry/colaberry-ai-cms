@@ -20,6 +20,7 @@ export interface SharedPlatformLink extends Struct.ComponentSchema {
     platform: Schema.Attribute.Enumeration<
       ['apple', 'spotify', 'youtube', 'substack', 'twitter']
     >;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 

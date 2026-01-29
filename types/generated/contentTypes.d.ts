@@ -684,7 +684,7 @@ export interface ApiPodcastEpisodePodcastEpisode
   };
   attributes: {
     audioUrl: Schema.Attribute.String;
-    buzzsproutEmbedCode: Schema.Attribute.String;
+    buzzsproutEmbedCode: Schema.Attribute.Text;
     buzzsproutEpisodeId: Schema.Attribute.String;
     companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
     coverImage: Schema.Attribute.Media<
