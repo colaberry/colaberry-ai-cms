@@ -497,6 +497,44 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
+  collectionName: 'agents';
+  info: {
+    displayName: 'Agent';
+    pluralName: 'agents';
+    singularName: 'agent';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
+    coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
+    industry: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::agent.agent'> &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
+      Schema.Attribute.DefaultTo<'live'>;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    visibility: Schema.Attribute.Enumeration<['public', 'private']> &
+      Schema.Attribute.DefaultTo<'public'>;
+  };
+}
+
 export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   collectionName: 'articles';
   info: {
@@ -612,6 +650,7 @@ export interface ApiCompanyCompany extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    agents: Schema.Attribute.Relation<'manyToMany', 'api::agent.agent'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -624,6 +663,10 @@ export interface ApiCompanyCompany extends Struct.CollectionTypeSchema {
     logo: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
       true
+    >;
+    mcp_servers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::mcp-server.mcp-server'
     >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     podcast_episodes: Schema.Attribute.Relation<
@@ -671,6 +714,49 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
+  collectionName: 'mcp_servers';
+  info: {
+    displayName: 'MCP Server';
+    pluralName: 'mcp-servers';
+    singularName: 'mcp-server';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    category: Schema.Attribute.String;
+    companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
+    coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
+    docsUrl: Schema.Attribute.String;
+    industry: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::mcp-server.mcp-server'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
+      Schema.Attribute.DefaultTo<'live'>;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    visibility: Schema.Attribute.Enumeration<['public', 'private']> &
+      Schema.Attribute.DefaultTo<'public'>;
+  };
+}
+
 export interface ApiPodcastEpisodePodcastEpisode
   extends Struct.CollectionTypeSchema {
   collectionName: 'podcast_episodes';
@@ -714,6 +800,8 @@ export interface ApiPodcastEpisodePodcastEpisode
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    useNativePlayer: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
   };
 }
 
@@ -728,6 +816,7 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    agents: Schema.Attribute.Relation<'manyToMany', 'api::agent.agent'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -735,6 +824,10 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'> &
       Schema.Attribute.Private;
+    mcp_servers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::mcp-server.mcp-server'
+    >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     podcast_episodes: Schema.Attribute.Relation<
       'manyToMany',
@@ -1260,11 +1353,13 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
+      'api::agent.agent': ApiAgentAgent;
       'api::article.article': ApiArticleArticle;
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
       'api::company.company': ApiCompanyCompany;
       'api::global.global': ApiGlobalGlobal;
+      'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
       'api::tag.tag': ApiTagTag;
       'plugin::content-releases.release': PluginContentReleasesRelease;

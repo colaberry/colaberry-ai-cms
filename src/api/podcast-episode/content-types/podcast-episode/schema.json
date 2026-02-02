@@ -46,6 +46,10 @@
     "audioUrl": {
       "type": "string"
     },
+    "useNativePlayer": {
+      "type": "boolean",
+      "default": false
+    },
     "episodeNumber": {
       "type": "integer"
     },

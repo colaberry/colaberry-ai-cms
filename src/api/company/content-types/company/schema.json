@@ -38,6 +38,18 @@
       "relation": "manyToMany",
       "target": "api::podcast-episode.podcast-episode",
       "inversedBy": "companies"
+    },
+    "agents": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::agent.agent",
+      "mappedBy": "companies"
+    },
+    "mcp_servers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::mcp-server.mcp-server",
+      "mappedBy": "companies"
     }
   }
 }

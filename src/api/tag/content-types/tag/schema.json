@@ -28,6 +28,18 @@
       "relation": "manyToMany",
       "target": "api::podcast-episode.podcast-episode",
       "mappedBy": "tags"
+    },
+    "agents": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::agent.agent",
+      "mappedBy": "tags"
+    },
+    "mcp_servers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::mcp-server.mcp-server",
+      "mappedBy": "tags"
     }
   }
 }
