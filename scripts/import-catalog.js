@@ -213,6 +213,8 @@ async function importRow(typeKey, row, headers) {
     visibility: (record.visibility || "public").toLowerCase(),
     source: (record.source || "internal").toLowerCase(),
     sourceUrl: record.sourceUrl || null,
+    sourceName: record.sourceName || null,
+    verified: record.verified ? String(record.verified).toLowerCase() === "true" : false,
     industry: record.industry || null,
     tags: tagIds,
     companies: companyIds,

@@ -53,6 +53,9 @@
     "sourceUrl": {
       "type": "string"
     },
+    "sourceName": {
+      "type": "string"
+    },
     "verified": {
       "type": "boolean",
       "default": false

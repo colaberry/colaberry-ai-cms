@@ -526,6 +526,7 @@ export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
       Schema.Attribute.DefaultTo<'internal'>;
+    sourceName: Schema.Attribute.String;
     sourceUrl: Schema.Attribute.String;
     status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
       Schema.Attribute.DefaultTo<'live'>;
@@ -752,6 +753,7 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
       Schema.Attribute.DefaultTo<'internal'>;
+    sourceName: Schema.Attribute.String;
     sourceUrl: Schema.Attribute.String;
     status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
       Schema.Attribute.DefaultTo<'live'>;
@@ -759,6 +761,7 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
   };

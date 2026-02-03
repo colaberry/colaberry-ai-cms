@@ -72,6 +72,41 @@ async function request(path, options = {}) {
   return res.json();
 }
 
+function extractInvalidKey(message) {
+  const match = String(message || "").match(/Invalid key\\s+([a-zA-Z0-9_]+)/);
+  if (match && match[1]) {
+    return match[1];
+  }
+  const jsonMatch = String(message || "").match(/\"key\"\\s*:\\s*\"([^\"]+)\"/);
+  if (jsonMatch && jsonMatch[1]) {
+    return jsonMatch[1];
+  }
+  return null;
+}
+
+async function requestWithFallback(method, path, payload) {
+  try {
+    await request(path, {
+      method,
+      body: JSON.stringify({ data: payload }),
+    });
+    return payload;
+  } catch (err) {
+    const invalidKey = extractInvalidKey(err.message);
+    if (invalidKey && Object.prototype.hasOwnProperty.call(payload, invalidKey)) {
+      const nextPayload = { ...payload };
+      delete nextPayload[invalidKey];
+      console.log(`Retrying ${method} without unsupported field: ${invalidKey}`);
+      await request(path, {
+        method,
+        body: JSON.stringify({ data: nextPayload }),
+      });
+      return nextPayload;
+    }
+    throw err;
+  }
+}
+
 async function wipeAllMCPs() {
   if (dryRun) {
     console.log("DRY RUN: wipe existing MCP servers");
@@ -294,6 +329,8 @@ async function upsertServer(record) {
     visibility: record.visibility,
     source: record.source,
     sourceUrl: record.sourceUrl || null,
+    sourceName: "Registry",
+    verified: true,
     industry: record.industry || null,
     category: record.category || null,
     docsUrl: record.docsUrl || null,
@@ -318,10 +355,7 @@ async function upsertServer(record) {
   if (existing.data && existing.data.length) {
     const id = existing.data[0].id;
     try {
-      await request(`/api/mcp-servers/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ data: payload }),
-      });
+      await requestWithFallback("PUT", `/api/mcp-servers/${id}`, payload);
       console.log(`Updated mcp ${payload.slug}`);
       return;
     } catch (err) {
@@ -334,10 +368,7 @@ async function upsertServer(record) {
   }
 
   try {
-    await request(`/api/mcp-servers`, {
-      method: "POST",
-      body: JSON.stringify({ data: payload }),
-    });
+    await requestWithFallback("POST", `/api/mcp-servers`, payload);
     console.log(`Created mcp ${payload.slug}`);
   } catch (err) {
     if (String(err.message || "").includes("unique")) {
@@ -349,10 +380,7 @@ async function upsertServer(record) {
       if (retry.data && retry.data.length) {
         const id = retry.data[0].id;
         try {
-          await request(`/api/mcp-servers/${id}`, {
-            method: "PUT",
-            body: JSON.stringify({ data: payload }),
-          });
+          await requestWithFallback("PUT", `/api/mcp-servers/${id}`, payload);
           console.log(`Updated mcp ${payload.slug} after unique conflict`);
           return;
         } catch (updateErr) {
