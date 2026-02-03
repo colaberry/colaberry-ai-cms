@@ -29,6 +29,34 @@
     "transcript": {
       "type": "richtext"
     },
+    "transcriptSegments": {
+      "type": "json"
+    },
+    "transcriptStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "processing",
+        "ready",
+        "failed"
+      ]
+    },
+    "transcriptSource": {
+      "type": "enumeration",
+      "enum": [
+        "manual",
+        "auto"
+      ]
+    },
+    "transcriptGeneratedAt": {
+      "type": "datetime"
+    },
+    "transcriptSrt": {
+      "type": "text"
+    },
+    "transcriptVtt": {
+      "type": "text"
+    },
     "podcastStatus": {
       "type": "enumeration",
       "default": "draft",

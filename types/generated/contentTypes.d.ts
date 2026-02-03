@@ -817,6 +817,14 @@ export interface ApiPodcastEpisodePodcastEpisode
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     transcript: Schema.Attribute.RichText;
+    transcriptGeneratedAt: Schema.Attribute.DateTime;
+    transcriptSegments: Schema.Attribute.JSON;
+    transcriptSource: Schema.Attribute.Enumeration<['manual', 'auto']>;
+    transcriptSrt: Schema.Attribute.Text;
+    transcriptStatus: Schema.Attribute.Enumeration<
+      ['pending', 'processing', 'ready', 'failed']
+    >;
+    transcriptVtt: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

@@ -12,6 +12,7 @@
     "seed:example": "node ./scripts/seed.js",
     "import:catalog": "node ./scripts/import-catalog.js",
     "import:mcp-registry": "node ./scripts/import-mcp-registry.js",
+    "transcribe:podcasts": "node ./scripts/transcribe-podcasts.js",
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",

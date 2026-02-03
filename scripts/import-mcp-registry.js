@@ -198,6 +198,19 @@ function extractServers(payload) {
   );
 }
 
+function extractNextCursor(payload) {
+  if (!payload) return null;
+  const metadata = payload.metadata || payload.meta || {};
+  return (
+    metadata.nextCursor ||
+    metadata.next_cursor ||
+    payload.nextCursor ||
+    payload.next_cursor ||
+    payload.cursor ||
+    null
+  );
+}
+
 function buildSlug(source) {
   if (!source) return "";
   const raw = String(source);
@@ -434,7 +447,7 @@ async function run() {
       await upsertServer(mapped);
       total += 1;
     }
-    cursor = payload.nextCursor || payload.next_cursor || payload.cursor || null;
+    cursor = extractNextCursor(payload);
   } while (cursor);
   console.log(`Done. Imported ${total} MCP servers.`);
 }
