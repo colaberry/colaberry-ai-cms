@@ -236,24 +236,58 @@ async function importRow(typeKey, row, headers) {
 
   const endpoint = typeKey === "agents" ? "/api/agents" : "/api/mcp-servers";
   const existing = await request(
-    `${endpoint}?filters[slug][$eq]=${encodeURIComponent(payload.slug)}`
+    `${endpoint}?publicationState=preview&filters[slug][$eq]=${encodeURIComponent(payload.slug)}`
   );
 
   if (existing.data && existing.data.length) {
     const id = existing.data[0].id;
-    await request(`${endpoint}/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ data: payload }),
-    });
-    console.log(`Updated ${typeKey} ${payload.slug}`);
-    return;
+    try {
+      await request(`${endpoint}/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ data: payload }),
+      });
+      console.log(`Updated ${typeKey} ${payload.slug}`);
+      return;
+    } catch (err) {
+      if (String(err.message || "").includes("404")) {
+        console.log(`Existing ${typeKey} ${payload.slug} not found on update. Recreating.`);
+      } else {
+        throw err;
+      }
+    }
   }
 
-  await request(endpoint, {
-    method: "POST",
-    body: JSON.stringify({ data: payload }),
-  });
-  console.log(`Created ${typeKey} ${payload.slug}`);
+  try {
+    await request(endpoint, {
+      method: "POST",
+      body: JSON.stringify({ data: payload }),
+    });
+    console.log(`Created ${typeKey} ${payload.slug}`);
+  } catch (err) {
+    if (String(err.message || "").includes("unique")) {
+      const retry = await request(
+        `${endpoint}?publicationState=preview&filters[slug][$eq]=${encodeURIComponent(payload.slug)}`
+      );
+      if (retry.data && retry.data.length) {
+        const id = retry.data[0].id;
+        try {
+          await request(`${endpoint}/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({ data: payload }),
+          });
+          console.log(`Updated ${typeKey} ${payload.slug} after unique conflict`);
+          return;
+        } catch (updateErr) {
+          if (String(updateErr.message || "").includes("404")) {
+            console.log(`${typeKey} ${payload.slug} disappeared during update. Skipping.`);
+            return;
+          }
+          throw updateErr;
+        }
+      }
+    }
+    throw err;
+  }
 }
 
 async function run() {
