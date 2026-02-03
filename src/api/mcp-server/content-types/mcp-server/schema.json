@@ -41,6 +41,18 @@
         "private"
       ]
     },
+    "source": {
+      "type": "enumeration",
+      "default": "internal",
+      "enum": [
+        "internal",
+        "external",
+        "partner"
+      ]
+    },
+    "sourceUrl": {
+      "type": "string"
+    },
     "industry": {
       "type": "string"
     },

@@ -211,6 +211,8 @@ async function importRow(typeKey, row, headers) {
     description: record.description || null,
     status: (record.status || "live").toLowerCase(),
     visibility: (record.visibility || "public").toLowerCase(),
+    source: (record.source || "internal").toLowerCase(),
+    sourceUrl: record.sourceUrl || null,
     industry: record.industry || null,
     tags: tagIds,
     companies: companyIds,

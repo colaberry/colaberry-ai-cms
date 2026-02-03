@@ -524,12 +524,16 @@ export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
+      Schema.Attribute.DefaultTo<'internal'>;
+    sourceUrl: Schema.Attribute.String;
     status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
       Schema.Attribute.DefaultTo<'live'>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
   };
@@ -746,6 +750,9 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
+      Schema.Attribute.DefaultTo<'internal'>;
+    sourceUrl: Schema.Attribute.String;
     status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
       Schema.Attribute.DefaultTo<'live'>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
@@ -772,6 +779,7 @@ export interface ApiPodcastEpisodePodcastEpisode
     audioUrl: Schema.Attribute.String;
     buzzsproutEmbedCode: Schema.Attribute.Text;
     buzzsproutEpisodeId: Schema.Attribute.String;
+    clickCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
     coverImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
@@ -788,12 +796,21 @@ export interface ApiPodcastEpisodePodcastEpisode
       'api::podcast-episode.podcast-episode'
     > &
       Schema.Attribute.Private;
+    logs: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::podcast-log.podcast-log'
+    >;
     platformLinks: Schema.Attribute.Component<'shared.platform-link', true>;
+    playCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     podcastStatus: Schema.Attribute.Enumeration<['draft', 'published']> &
       Schema.Attribute.DefaultTo<'draft'>;
+    podcastType: Schema.Attribute.Enumeration<['internal', 'external']> &
+      Schema.Attribute.DefaultTo<'internal'>;
     publishedAt: Schema.Attribute.DateTime;
     publishedDate: Schema.Attribute.Date;
+    shareCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    subscribeCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     transcript: Schema.Attribute.RichText;
@@ -802,6 +819,49 @@ export interface ApiPodcastEpisodePodcastEpisode
       Schema.Attribute.Private;
     useNativePlayer: Schema.Attribute.Boolean &
       Schema.Attribute.DefaultTo<false>;
+    viewCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+  };
+}
+
+export interface ApiPodcastLogPodcastLog extends Struct.CollectionTypeSchema {
+  collectionName: 'podcast_logs';
+  info: {
+    displayName: 'Podcast Log';
+    pluralName: 'podcast-logs';
+    singularName: 'podcast-log';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    episode: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::podcast-episode.podcast-episode'
+    >;
+    episodeSlug: Schema.Attribute.String & Schema.Attribute.Required;
+    episodeTitle: Schema.Attribute.String;
+    eventType: Schema.Attribute.Enumeration<
+      ['view', 'play', 'share', 'subscribe', 'click']
+    > &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::podcast-log.podcast-log'
+    > &
+      Schema.Attribute.Private;
+    occurredAt: Schema.Attribute.DateTime;
+    platform: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    referrer: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
+    userAgent: Schema.Attribute.Text;
   };
 }
 
@@ -1361,6 +1421,7 @@ declare module '@strapi/strapi' {
       'api::global.global': ApiGlobalGlobal;
       'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
+      'api::podcast-log.podcast-log': ApiPodcastLogPodcastLog;
       'api::tag.tag': ApiTagTag;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

@@ -37,6 +37,14 @@
         "published"
       ]
     },
+    "podcastType": {
+      "type": "enumeration",
+      "default": "internal",
+      "enum": [
+        "internal",
+        "external"
+      ]
+    },
     "buzzsproutEpisodeId": {
       "type": "string"
     },
@@ -55,6 +63,26 @@
     },
     "duration": {
       "type": "string"
+    },
+    "viewCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "playCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "shareCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "subscribeCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "clickCount": {
+      "type": "integer",
+      "default": 0
     },
     "coverImage": {
       "type": "media",
@@ -82,6 +110,12 @@
       "relation": "manyToMany",
       "target": "api::company.company",
       "mappedBy": "podcast_episodes"
+    },
+    "logs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::podcast-log.podcast-log",
+      "mappedBy": "episode"
     }
   }
 }
