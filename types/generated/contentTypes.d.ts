@@ -687,6 +687,40 @@ export interface ApiCompanyCompany extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiGlobalNavigationGlobalNavigation
+  extends Struct.SingleTypeSchema {
+  collectionName: 'global_navigations';
+  info: {
+    description: 'Header and footer navigation configuration';
+    displayName: 'Global Navigation';
+    pluralName: 'global-navigations';
+    singularName: 'global-navigation';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cta: Schema.Attribute.Component<'shared.navigation-link', false>;
+    footerColumns: Schema.Attribute.Component<'shared.navigation-column', true>;
+    headerLinks: Schema.Attribute.Component<'shared.navigation-link', true>;
+    legalLinks: Schema.Attribute.Component<'shared.navigation-link', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::global-navigation.global-navigation'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    socialLinks: Schema.Attribute.Component<'shared.navigation-link', true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
   collectionName: 'globals';
   info: {
@@ -1429,6 +1463,7 @@ declare module '@strapi/strapi' {
       'api::author.author': ApiAuthorAuthor;
       'api::category.category': ApiCategoryCategory;
       'api::company.company': ApiCompanyCompany;
+      'api::global-navigation.global-navigation': ApiGlobalNavigationGlobalNavigation;
       'api::global.global': ApiGlobalGlobal;
       'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
