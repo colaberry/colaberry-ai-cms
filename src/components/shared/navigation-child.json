@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_shared_navigation_links",
+  "collectionName": "components_shared_navigation_children",
   "info": {
-    "displayName": "Navigation Link"
+    "displayName": "Navigation Child"
   },
   "options": {},
   "attributes": {
@@ -28,11 +28,6 @@
     },
     "group": {
       "type": "string"
-    },
-    "children": {
-      "type": "component",
-      "repeatable": true,
-      "component": "shared.navigation-child"
     }
   },
   "config": {}

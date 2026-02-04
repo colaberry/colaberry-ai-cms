@@ -11,6 +11,21 @@ export interface SharedMedia extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedNavigationChild extends Struct.ComponentSchema {
+  collectionName: 'components_shared_navigation_children';
+  info: {
+    displayName: 'Navigation Child';
+  };
+  attributes: {
+    group: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    icon: Schema.Attribute.String;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    target: Schema.Attribute.Enumeration<['_self', '_blank']>;
+  };
+}
+
 export interface SharedNavigationColumn extends Struct.ComponentSchema {
   collectionName: 'components_shared_navigation_columns';
   info: {
@@ -28,6 +43,7 @@ export interface SharedNavigationLink extends Struct.ComponentSchema {
     displayName: 'Navigation Link';
   };
   attributes: {
+    children: Schema.Attribute.Component<'shared.navigation-child', true>;
     group: Schema.Attribute.String;
     href: Schema.Attribute.String & Schema.Attribute.Required;
     icon: Schema.Attribute.String;
@@ -119,6 +135,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'shared.media': SharedMedia;
+      'shared.navigation-child': SharedNavigationChild;
       'shared.navigation-column': SharedNavigationColumn;
       'shared.navigation-link': SharedNavigationLink;
       'shared.platform-link': SharedPlatformLink;
