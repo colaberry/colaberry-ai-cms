@@ -850,7 +850,6 @@ export interface ApiPodcastEpisodePodcastEpisode
     subscribeCount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
-    transcript: Schema.Attribute.RichText;
     transcriptGeneratedAt: Schema.Attribute.DateTime;
     transcriptSegments: Schema.Attribute.JSON;
     transcriptSource: Schema.Attribute.Enumeration<['manual', 'auto']>;

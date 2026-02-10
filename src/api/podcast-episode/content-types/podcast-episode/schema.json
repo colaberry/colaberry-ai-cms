@@ -26,9 +26,6 @@
     "description": {
       "type": "blocks"
     },
-    "transcript": {
-      "type": "richtext"
-    },
     "transcriptSegments": {
       "type": "json"
     },
