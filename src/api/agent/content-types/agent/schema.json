@@ -83,6 +83,51 @@
         "files",
         "videos"
       ]
+    },
+    "whatItDoes": {
+      "type": "text"
+    },
+    "outcomes": {
+      "type": "text"
+    },
+    "coreTasks": {
+      "type": "text"
+    },
+    "inputs": {
+      "type": "text"
+    },
+    "outputs": {
+      "type": "text"
+    },
+    "tools": {
+      "type": "text"
+    },
+    "executionModes": {
+      "type": "text"
+    },
+    "orchestration": {
+      "type": "text"
+    },
+    "securityCompliance": {
+      "type": "text"
+    },
+    "docsUrl": {
+      "type": "string"
+    },
+    "demoUrl": {
+      "type": "string"
+    },
+    "changelogUrl": {
+      "type": "string"
+    },
+    "usageCount": {
+      "type": "integer"
+    },
+    "rating": {
+      "type": "decimal"
+    },
+    "lastUpdated": {
+      "type": "datetime"
     }
   }
 }

@@ -89,6 +89,49 @@
       "relation": "manyToMany",
       "target": "api::company.company",
       "inversedBy": "mcp_servers"
+    },
+    "serverType": {
+      "type": "string"
+    },
+    "primaryFunction": {
+      "type": "text"
+    },
+    "openSource": {
+      "type": "boolean",
+      "default": false
+    },
+    "language": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "text"
+    },
+    "tools": {
+      "type": "text"
+    },
+    "authMethods": {
+      "type": "text"
+    },
+    "hostingOptions": {
+      "type": "text"
+    },
+    "compatibility": {
+      "type": "text"
+    },
+    "pricing": {
+      "type": "text"
+    },
+    "tryItNowUrl": {
+      "type": "string"
+    },
+    "usageCount": {
+      "type": "integer"
+    },
+    "rating": {
+      "type": "decimal"
+    },
+    "lastUpdated": {
+      "type": "datetime"
     }
   }
 }

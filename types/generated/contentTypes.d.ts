@@ -508,21 +508,33 @@ export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    changelogUrl: Schema.Attribute.String;
     companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
+    coreTasks: Schema.Attribute.Text;
     coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    demoUrl: Schema.Attribute.String;
     description: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 280;
       }>;
+    docsUrl: Schema.Attribute.String;
+    executionModes: Schema.Attribute.Text;
     industry: Schema.Attribute.String;
+    inputs: Schema.Attribute.Text;
+    lastUpdated: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::agent.agent'> &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    orchestration: Schema.Attribute.Text;
+    outcomes: Schema.Attribute.Text;
+    outputs: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Decimal;
+    securityCompliance: Schema.Attribute.Text;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
       Schema.Attribute.DefaultTo<'internal'>;
@@ -531,12 +543,15 @@ export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
     status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
       Schema.Attribute.DefaultTo<'live'>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    tools: Schema.Attribute.Text;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    usageCount: Schema.Attribute.Integer;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
+    whatItDoes: Schema.Attribute.Text;
   };
 }
 
@@ -764,8 +779,11 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    authMethods: Schema.Attribute.Text;
+    capabilities: Schema.Attribute.Text;
     category: Schema.Attribute.String;
     companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
+    compatibility: Schema.Attribute.Text;
     coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -775,7 +793,10 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
         maxLength: 280;
       }>;
     docsUrl: Schema.Attribute.String;
+    hostingOptions: Schema.Attribute.Text;
     industry: Schema.Attribute.String;
+    language: Schema.Attribute.String;
+    lastUpdated: Schema.Attribute.DateTime;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -783,7 +804,12 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    openSource: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    pricing: Schema.Attribute.Text;
+    primaryFunction: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Decimal;
+    serverType: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
       Schema.Attribute.DefaultTo<'internal'>;
@@ -792,9 +818,12 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
       Schema.Attribute.DefaultTo<'live'>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    tools: Schema.Attribute.Text;
+    tryItNowUrl: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    usageCount: Schema.Attribute.Integer;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
