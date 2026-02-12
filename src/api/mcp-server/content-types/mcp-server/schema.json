@@ -132,6 +132,27 @@
     },
     "lastUpdated": {
       "type": "datetime"
+    },
+    "registryName": {
+      "type": "string"
+    },
+    "longDescription": {
+      "type": "richtext"
+    },
+    "keyBenefits": {
+      "type": "text"
+    },
+    "useCases": {
+      "type": "text"
+    },
+    "limitations": {
+      "type": "text"
+    },
+    "requirements": {
+      "type": "text"
+    },
+    "exampleWorkflow": {
+      "type": "text"
     }
   }
 }

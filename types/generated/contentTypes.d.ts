@@ -521,19 +521,24 @@ export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
         maxLength: 280;
       }>;
     docsUrl: Schema.Attribute.String;
+    exampleWorkflow: Schema.Attribute.Text;
     executionModes: Schema.Attribute.Text;
     industry: Schema.Attribute.String;
     inputs: Schema.Attribute.Text;
+    keyBenefits: Schema.Attribute.Text;
     lastUpdated: Schema.Attribute.DateTime;
+    limitations: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::agent.agent'> &
       Schema.Attribute.Private;
+    longDescription: Schema.Attribute.RichText;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     orchestration: Schema.Attribute.Text;
     outcomes: Schema.Attribute.Text;
     outputs: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
+    requirements: Schema.Attribute.Text;
     securityCompliance: Schema.Attribute.Text;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
@@ -548,6 +553,7 @@ export interface ApiAgentAgent extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     usageCount: Schema.Attribute.Integer;
+    useCases: Schema.Attribute.Text;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
@@ -793,22 +799,28 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
         maxLength: 280;
       }>;
     docsUrl: Schema.Attribute.String;
+    exampleWorkflow: Schema.Attribute.Text;
     hostingOptions: Schema.Attribute.Text;
     industry: Schema.Attribute.String;
+    keyBenefits: Schema.Attribute.Text;
     language: Schema.Attribute.String;
     lastUpdated: Schema.Attribute.DateTime;
+    limitations: Schema.Attribute.Text;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::mcp-server.mcp-server'
     > &
       Schema.Attribute.Private;
+    longDescription: Schema.Attribute.RichText;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     openSource: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     pricing: Schema.Attribute.Text;
     primaryFunction: Schema.Attribute.Text;
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
+    registryName: Schema.Attribute.String;
+    requirements: Schema.Attribute.Text;
     serverType: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
@@ -824,6 +836,7 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     usageCount: Schema.Attribute.Integer;
+    useCases: Schema.Attribute.Text;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
