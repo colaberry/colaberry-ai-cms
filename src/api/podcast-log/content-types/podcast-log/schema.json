@@ -38,6 +38,18 @@
     "platform": {
       "type": "string"
     },
+    "sessionId": {
+      "type": "string"
+    },
+    "requestId": {
+      "type": "string"
+    },
+    "ipHash": {
+      "type": "string"
+    },
+    "pagePath": {
+      "type": "string"
+    },
     "url": {
       "type": "string"
     },
@@ -49,6 +61,9 @@
     },
     "occurredAt": {
       "type": "datetime"
+    },
+    "metadata": {
+      "type": "json"
     }
   }
 }

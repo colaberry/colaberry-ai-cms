@@ -843,6 +843,46 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiNewsletterSubscriberNewsletterSubscriber
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'newsletter_subscribers';
+  info: {
+    displayName: 'Newsletter Subscriber';
+    pluralName: 'newsletter-subscribers';
+    singularName: 'newsletter-subscriber';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::newsletter-subscriber.newsletter-subscriber'
+    > &
+      Schema.Attribute.Private;
+    metadata: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    sourcePage: Schema.Attribute.String;
+    sourcePath: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['subscribed', 'unsubscribed', 'bounced']
+    > &
+      Schema.Attribute.DefaultTo<'subscribed'>;
+    subscribedAt: Schema.Attribute.DateTime;
+    unsubscribedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPodcastEpisodePodcastEpisode
   extends Struct.CollectionTypeSchema {
   collectionName: 'podcast_episodes';
@@ -909,6 +949,51 @@ export interface ApiPodcastEpisodePodcastEpisode
   };
 }
 
+export interface ApiPodcastImportPodcastImport
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'podcast_imports';
+  info: {
+    displayName: 'Podcast Import';
+    pluralName: 'podcast-imports';
+    singularName: 'podcast-import';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    createRelations: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<true>;
+    csvFile: Schema.Attribute.Media<'files'>;
+    csvText: Schema.Attribute.Text;
+    dryRun: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    errors: Schema.Attribute.JSON;
+    lastMessage: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::podcast-import.podcast-import'
+    > &
+      Schema.Attribute.Private;
+    processedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    runImport: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    startedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<
+      ['queued', 'processing', 'completed', 'failed']
+    > &
+      Schema.Attribute.DefaultTo<'queued'>;
+    strictMode: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    summary: Schema.Attribute.JSON;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPodcastLogPodcastLog extends Struct.CollectionTypeSchema {
   collectionName: 'podcast_logs';
   info: {
@@ -933,16 +1018,21 @@ export interface ApiPodcastLogPodcastLog extends Struct.CollectionTypeSchema {
       ['view', 'play', 'share', 'subscribe', 'click']
     > &
       Schema.Attribute.Required;
+    ipHash: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::podcast-log.podcast-log'
     > &
       Schema.Attribute.Private;
+    metadata: Schema.Attribute.JSON;
     occurredAt: Schema.Attribute.DateTime;
+    pagePath: Schema.Attribute.String;
     platform: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     referrer: Schema.Attribute.String;
+    requestId: Schema.Attribute.String;
+    sessionId: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -984,6 +1074,71 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiUseCaseUseCase extends Struct.CollectionTypeSchema {
+  collectionName: 'use_cases';
+  info: {
+    displayName: 'Use Case';
+    pluralName: 'use-cases';
+    singularName: 'use-case';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    agents: Schema.Attribute.Relation<'manyToMany', 'api::agent.agent'>;
+    approach: Schema.Attribute.Text;
+    category: Schema.Attribute.String;
+    companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
+    coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    demoUrl: Schema.Attribute.String;
+    docsUrl: Schema.Attribute.String;
+    implementationSteps: Schema.Attribute.Text;
+    industry: Schema.Attribute.String;
+    keyBenefits: Schema.Attribute.Text;
+    lastUpdated: Schema.Attribute.DateTime;
+    limitations: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::use-case.use-case'
+    > &
+      Schema.Attribute.Private;
+    longDescription: Schema.Attribute.RichText;
+    mcpServers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::mcp-server.mcp-server'
+    >;
+    metrics: Schema.Attribute.Text;
+    outcomes: Schema.Attribute.Text;
+    problem: Schema.Attribute.Text;
+    publishedAt: Schema.Attribute.DateTime;
+    requirements: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
+      Schema.Attribute.DefaultTo<'internal'>;
+    sourceName: Schema.Attribute.String;
+    sourceUrl: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
+      Schema.Attribute.DefaultTo<'live'>;
+    summary: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    timeline: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    visibility: Schema.Attribute.Enumeration<['public', 'private']> &
+      Schema.Attribute.DefaultTo<'public'>;
   };
 }
 
@@ -1250,6 +1405,7 @@ export interface PluginUploadFile extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     ext: Schema.Attribute.String;
+    focalPoint: Schema.Attribute.JSON;
     folder: Schema.Attribute.Relation<'manyToOne', 'plugin::upload.folder'> &
       Schema.Attribute.Private;
     folderPath: Schema.Attribute.String &
@@ -1507,9 +1663,12 @@ declare module '@strapi/strapi' {
       'api::global-navigation.global-navigation': ApiGlobalNavigationGlobalNavigation;
       'api::global.global': ApiGlobalGlobal;
       'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
+      'api::newsletter-subscriber.newsletter-subscriber': ApiNewsletterSubscriberNewsletterSubscriber;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
+      'api::podcast-import.podcast-import': ApiPodcastImportPodcastImport;
       'api::podcast-log.podcast-log': ApiPodcastLogPodcastLog;
       'api::tag.tag': ApiTagTag;
+      'api::use-case.use-case': ApiUseCaseUseCase;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

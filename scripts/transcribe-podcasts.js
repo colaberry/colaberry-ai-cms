@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+const fs = require("fs");
+
 const args = process.argv.slice(2);
 
 const urlArgIndex = args.indexOf("--url");
@@ -8,6 +10,7 @@ const deepgramKeyArgIndex = args.indexOf("--deepgram-key");
 const openaiKeyArgIndex = args.indexOf("--openai-key");
 const providerArgIndex = args.indexOf("--provider");
 const limitArgIndex = args.indexOf("--limit");
+const logFileArgIndex = args.indexOf("--log-file");
 const dryRun = args.includes("--dry-run");
 
 const baseUrl =
@@ -31,6 +34,8 @@ const provider =
     ? args[providerArgIndex + 1]
     : process.env.TRANSCRIPT_PROVIDER) || "";
 const limit = limitArgIndex !== -1 ? Number(args[limitArgIndex + 1]) : 20;
+const logFile =
+  (logFileArgIndex !== -1 ? args[logFileArgIndex + 1] : process.env.TRANSCRIPT_LOG_FILE) || "";
 
 if (!token && !dryRun) {
   console.error("Missing STRAPI_TOKEN or --token.");
@@ -42,6 +47,63 @@ if (!webhook && !openaiKey && !deepgramKey && !dryRun) {
     "Missing TRANSCRIPT_WEBHOOK_URL/--webhook, OPENAI_API_KEY/--openai-key, or DEEPGRAM_API_KEY/--deepgram-key."
   );
   process.exit(1);
+}
+
+function logEvent(level, message, context = {}) {
+  const payload = {
+    at: new Date().toISOString(),
+    level,
+    message,
+    ...context,
+  };
+  const line = JSON.stringify(payload);
+
+  if (level === "error") {
+    console.error(line);
+  } else {
+    console.log(line);
+  }
+
+  if (logFile) {
+    try {
+      fs.appendFileSync(logFile, `${line}\n`, "utf8");
+    } catch (error) {
+      console.error(`Failed to write transcript log file: ${error.message}`);
+    }
+  }
+}
+
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withRetry(fn, options = {}) {
+  const retries = Number.isFinite(options.retries) ? Number(options.retries) : 2;
+  const initialDelayMs = Number.isFinite(options.initialDelayMs)
+    ? Number(options.initialDelayMs)
+    : 500;
+  const label = options.label || "operation";
+
+  let attempt = 0;
+  // attempt count = retries + initial attempt
+  while (attempt <= retries) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt >= retries) {
+        throw error;
+      }
+      const delay = initialDelayMs * Math.pow(2, attempt);
+      logEvent("warn", `${label} failed, retrying`, {
+        attempt: attempt + 1,
+        retries,
+        delayMs: delay,
+        reason: error?.message || "unknown",
+      });
+      await sleep(delay);
+      attempt += 1;
+    }
+  }
 }
 
 async function request(path, options = {}) {
@@ -62,11 +124,15 @@ async function request(path, options = {}) {
 }
 
 async function fetchEpisodes() {
-  const res = await request(
-    `/api/podcast-episodes?publicationState=preview&pagination[page]=1&pagination[pageSize]=${limit}` +
-      `&filters[audioUrl][$notNull]=true` +
-      `&filters[transcriptStatus][$ne]=ready` +
-      `&sort=publishedDate:desc`
+  const res = await withRetry(
+    () =>
+      request(
+        `/api/podcast-episodes?publicationState=preview&pagination[page]=1&pagination[pageSize]=${limit}` +
+          `&filters[audioUrl][$notNull]=true` +
+          `&filters[transcriptStatus][$ne]=ready` +
+          `&sort=publishedDate:desc`
+      ),
+    { label: "fetch-episodes" }
   );
   return res?.data || [];
 }
@@ -196,14 +262,24 @@ async function resolveEpisodeDocId(docId, slug) {
 
 async function updateEpisode(docId, data, slug) {
   if (dryRun) {
-    console.log("DRY RUN: update", docId, Object.keys(data));
+    logEvent("info", "DRY RUN: episode update skipped", {
+      slug,
+      targetId: docId,
+      fields: Object.keys(data),
+    });
     return;
   }
-  const targetId = await resolveEpisodeDocId(docId, slug);
-  await request(`/api/podcast-episodes/${targetId}`, {
-    method: "PUT",
-    body: JSON.stringify({ data }),
+  const targetId = await withRetry(() => resolveEpisodeDocId(docId, slug), {
+    label: "resolve-episode-id",
   });
+  await withRetry(
+    () =>
+      request(`/api/podcast-episodes/${targetId}`, {
+        method: "PUT",
+        body: JSON.stringify({ data }),
+      }),
+    { label: "update-episode" }
+  );
 }
 
 async function transcribeWithWebhook(audioUrl, attrs) {
@@ -298,9 +374,15 @@ async function transcribeWithOpenAI(audioUrl) {
 async function run() {
   const episodes = await fetchEpisodes();
   if (!episodes.length) {
-    console.log("No episodes to transcribe.");
+    logEvent("info", "No episodes to transcribe.");
     return;
   }
+
+  logEvent("info", "Starting podcast transcription batch", {
+    total: episodes.length,
+    provider: webhook ? "webhook" : provider || (deepgramKey ? "deepgram" : "none"),
+    dryRun,
+  });
 
   for (const item of episodes) {
     const id = item.id;
@@ -309,8 +391,16 @@ async function run() {
     const audioUrl = attrs.audioUrl;
     if (!audioUrl) continue;
 
-    console.log(`Transcribing ${attrs.slug || attrs.title}...`);
-    await updateEpisode(docId || id, { transcriptStatus: "processing", transcriptSource: "auto" }, attrs.slug);
+    const episodeLabel = attrs.slug || attrs.title || String(id);
+    logEvent("info", "Transcribing episode", {
+      episode: episodeLabel,
+      id: docId || id,
+    });
+    await updateEpisode(
+      docId || id,
+      { transcriptStatus: "processing", transcriptSource: "auto" },
+      attrs.slug
+    );
 
     if (dryRun) continue;
 
@@ -318,44 +408,66 @@ async function run() {
       let result;
       const providerKey = provider.toLowerCase();
       if (webhook) {
-        result = await transcribeWithWebhook(audioUrl, attrs);
+        result = await withRetry(() => transcribeWithWebhook(audioUrl, attrs), {
+          label: "transcribe-webhook",
+        });
       } else if (providerKey === "openai") {
         if (!openaiKey) {
           throw new Error("OPENAI_API_KEY is required for provider=openai.");
         }
-        result = await transcribeWithOpenAI(audioUrl);
+        result = await withRetry(() => transcribeWithOpenAI(audioUrl), {
+          label: "transcribe-openai",
+        });
       } else if (providerKey === "deepgram") {
         if (!deepgramKey) {
           throw new Error("DEEPGRAM_API_KEY is required for provider=deepgram.");
         }
-        result = await transcribeWithDeepgram(audioUrl);
+        result = await withRetry(() => transcribeWithDeepgram(audioUrl), {
+          label: "transcribe-deepgram",
+        });
       } else if (deepgramKey) {
-        result = await transcribeWithDeepgram(audioUrl);
+        result = await withRetry(() => transcribeWithDeepgram(audioUrl), {
+          label: "transcribe-deepgram-default",
+        });
       } else {
-        result = await transcribeWithDeepgram(audioUrl);
+        result = await withRetry(() => transcribeWithDeepgram(audioUrl), {
+          label: "transcribe-deepgram-fallback",
+        });
       }
 
       if (!result.segments?.length) {
         throw new Error("No transcript segments returned");
       }
 
-      await updateEpisode(docId || id, {
-        transcriptSegments: result.segments,
-        transcriptSrt: result.transcriptSrt,
-        transcriptVtt: result.transcriptVtt,
-        transcriptStatus: "ready",
-        transcriptSource: "auto",
-        transcriptGeneratedAt: new Date().toISOString(),
-      }, attrs.slug);
-      console.log(`Transcript ready for ${attrs.slug || attrs.title}`);
+      await updateEpisode(
+        docId || id,
+        {
+          transcriptSegments: result.segments,
+          transcriptSrt: result.transcriptSrt,
+          transcriptVtt: result.transcriptVtt,
+          transcriptStatus: "ready",
+          transcriptSource: "auto",
+          transcriptGeneratedAt: new Date().toISOString(),
+        },
+        attrs.slug
+      );
+      logEvent("info", "Transcript ready", {
+        episode: episodeLabel,
+        segments: result.segments.length,
+      });
     } catch (err) {
-      console.error(`Transcript failed for ${attrs.slug || attrs.title}:`, err.message);
+      logEvent("error", "Transcript failed", {
+        episode: episodeLabel,
+        reason: err?.message || "unknown",
+      });
       await updateEpisode(docId || id, { transcriptStatus: "failed" }, attrs.slug);
     }
   }
+
+  logEvent("info", "Podcast transcription batch complete", { total: episodes.length });
 }
 
 run().catch((err) => {
-  console.error(err.message);
+  logEvent("error", "Podcast transcription job failed", { reason: err?.message || "unknown" });
   process.exit(1);
 });

@@ -55,7 +55,7 @@ async function request(path, options = {}) {
   if (text) {
     try {
       json = JSON.parse(text);
-    } catch (error) {
+    } catch {
       json = text;
     }
   }

@@ -202,7 +202,7 @@ function extractInvalidKey(message) {
   if (match && match[1]) {
     return match[1];
   }
-  const jsonMatch = String(message || "").match(/\"key\"\\s*:\\s*\"([^\"]+)\"/);
+  const jsonMatch = String(message || "").match(/"key"\s*:\s*"([^"]+)"/);
   if (jsonMatch && jsonMatch[1]) {
     return jsonMatch[1];
   }
