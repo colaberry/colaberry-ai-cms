@@ -1041,6 +1041,74 @@ export interface ApiPodcastLogPodcastLog extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSkillSkill extends Struct.CollectionTypeSchema {
+  collectionName: 'skills';
+  info: {
+    displayName: 'Skill';
+    pluralName: 'skills';
+    singularName: 'skill';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    agents: Schema.Attribute.Relation<'manyToMany', 'api::agent.agent'>;
+    category: Schema.Attribute.String;
+    companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
+    coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    demoUrl: Schema.Attribute.String;
+    docsUrl: Schema.Attribute.String;
+    exampleWorkflow: Schema.Attribute.Text;
+    industry: Schema.Attribute.String;
+    inputs: Schema.Attribute.Text;
+    keyBenefits: Schema.Attribute.Text;
+    lastUpdated: Schema.Attribute.DateTime;
+    limitations: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::skill.skill'> &
+      Schema.Attribute.Private;
+    longDescription: Schema.Attribute.RichText;
+    mcpServers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::mcp-server.mcp-server'
+    >;
+    modelsSupported: Schema.Attribute.Text;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    outputs: Schema.Attribute.Text;
+    prerequisites: Schema.Attribute.Text;
+    provider: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    rating: Schema.Attribute.Decimal;
+    requirements: Schema.Attribute.Text;
+    securityNotes: Schema.Attribute.Text;
+    skillType: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    source: Schema.Attribute.Enumeration<['internal', 'external', 'partner']> &
+      Schema.Attribute.DefaultTo<'internal'>;
+    sourceName: Schema.Attribute.String;
+    sourceUrl: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<['live', 'beta', 'concept']> &
+      Schema.Attribute.DefaultTo<'live'>;
+    summary: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    toolsRequired: Schema.Attribute.Text;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    usageCount: Schema.Attribute.Integer;
+    useCases: Schema.Attribute.Relation<'manyToMany', 'api::use-case.use-case'>;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    visibility: Schema.Attribute.Enumeration<['public', 'private']> &
+      Schema.Attribute.DefaultTo<'public'>;
+  };
+}
+
 export interface ApiTagTag extends Struct.CollectionTypeSchema {
   collectionName: 'tags';
   info: {
@@ -1667,6 +1735,7 @@ declare module '@strapi/strapi' {
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
       'api::podcast-import.podcast-import': ApiPodcastImportPodcastImport;
       'api::podcast-log.podcast-log': ApiPodcastLogPodcastLog;
+      'api::skill.skill': ApiSkillSkill;
       'api::tag.tag': ApiTagTag;
       'api::use-case.use-case': ApiUseCaseUseCase;
       'plugin::content-releases.release': PluginContentReleasesRelease;
