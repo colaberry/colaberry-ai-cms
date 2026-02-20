@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "podcast_logs",
+  "info": {
+    "singularName": "podcast-log",
+    "pluralName": "podcast-logs",
+    "displayName": "Podcast Log"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "episodeSlug": {
+      "type": "string",
+      "required": true
+    },
+    "episodeTitle": {
+      "type": "string"
+    },
+    "episode": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::podcast-episode.podcast-episode",
+      "inversedBy": "logs"
+    },
+    "eventType": {
+      "type": "enumeration",
+      "required": true,
+      "enum": [
+        "view",
+        "play",
+        "share",
+        "subscribe",
+        "click"
+      ]
+    },
+    "platform": {
+      "type": "string"
+    },
+    "sessionId": {
+      "type": "string"
+    },
+    "requestId": {
+      "type": "string"
+    },
+    "ipHash": {
+      "type": "string"
+    },
+    "pagePath": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "referrer": {
+      "type": "string"
+    },
+    "userAgent": {
+      "type": "text"
+    },
+    "occurredAt": {
+      "type": "datetime"
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}

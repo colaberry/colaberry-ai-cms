@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_shared_podcast_distributions",
+  "info": {
+    "displayName": "Podcast Distribution"
+  },
+  "options": {},
+  "attributes": {
+    "applePodcastUrl": {
+      "type": "string"
+    },
+    "spotifyUrl": {
+      "type": "string"
+    },
+    "youtubeUrl": {
+      "type": "string"
+    },
+    "substackUrl": {
+      "type": "string"
+    },
+    "twitterUrl": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

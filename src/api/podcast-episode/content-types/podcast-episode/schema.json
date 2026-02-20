@@ -20,17 +20,94 @@
       "targetField": "title",
       "required": true
     },
+    "publishedDate": {
+      "type": "date"
+    },
     "description": {
       "type": "blocks"
+    },
+    "transcriptSegments": {
+      "type": "json"
+    },
+    "transcriptStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "processing",
+        "ready",
+        "failed"
+      ]
+    },
+    "transcriptSource": {
+      "type": "enumeration",
+      "enum": [
+        "manual",
+        "auto"
+      ]
+    },
+    "transcriptGeneratedAt": {
+      "type": "datetime"
+    },
+    "transcriptSrt": {
+      "type": "text"
+    },
+    "transcriptVtt": {
+      "type": "text"
+    },
+    "podcastStatus": {
+      "type": "enumeration",
+      "default": "draft",
+      "enum": [
+        "draft",
+        "published"
+      ]
+    },
+    "podcastType": {
+      "type": "enumeration",
+      "default": "internal",
+      "enum": [
+        "internal",
+        "external"
+      ]
+    },
+    "buzzsproutEpisodeId": {
+      "type": "string"
+    },
+    "buzzsproutEmbedCode": {
+      "type": "text"
+    },
+    "audioUrl": {
+      "type": "string"
+    },
+    "useNativePlayer": {
+      "type": "boolean",
+      "default": false
     },
     "episodeNumber": {
       "type": "integer"
     },
-    "publishedDate": {
-      "type": "date"
-    },
     "duration": {
       "type": "string"
+    },
+    "viewCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "playCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "shareCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "subscribeCount": {
+      "type": "integer",
+      "default": 0
+    },
+    "clickCount": {
+      "type": "integer",
+      "default": 0
     },
     "coverImage": {
       "type": "media",
@@ -42,19 +119,28 @@
         "audios"
       ]
     },
-    "buzzsproutEpisodeId": {
-      "type": "string"
+    "platformLinks": {
+      "type": "component",
+      "component": "shared.platform-link",
+      "repeatable": true
     },
-    "audioUrl": {
-      "type": "string"
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag",
+      "inversedBy": "podcast_episodes"
     },
-    "podcastStatus": {
-      "type": "enumeration",
-      "default": "draft",
-      "enum": [
-        "draft",
-        "published"
-      ]
+    "companies": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::company.company",
+      "mappedBy": "podcast_episodes"
+    },
+    "logs": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::podcast-log.podcast-log",
+      "mappedBy": "episode"
     }
   }
 }

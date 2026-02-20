@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_shared_platform_links",
+  "info": {
+    "displayName": "Platform Link"
+  },
+  "options": {},
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": [
+        "apple",
+        "spotify",
+        "youtube",
+        "substack",
+        "twitter"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    }
+  },
+  "config": {}
+}

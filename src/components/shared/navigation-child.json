@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_shared_navigation_children",
+  "info": {
+    "displayName": "Navigation Child"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    },
+    "target": {
+      "type": "enumeration",
+      "enum": [
+        "_self",
+        "_blank"
+      ]
+    },
+    "icon": {
+      "type": "string"
+    },
+    "order": {
+      "type": "integer"
+    },
+    "group": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

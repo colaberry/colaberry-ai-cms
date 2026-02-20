@@ -9,29 +9,39 @@
     "deploy": "strapi deploy",
     "dev": "strapi develop",
     "develop": "strapi develop",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"scripts/**/*.js\" --max-warnings=0",
     "seed:example": "node ./scripts/seed.js",
+    "import:catalog": "node ./scripts/import-catalog.js",
+    "import:global-navigation": "node ./scripts/import-global-navigation.js",
+    "import:mcp-registry": "node ./scripts/import-mcp-registry.js",
+    "transcribe:podcasts": "node ./scripts/transcribe-podcasts.js",
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "upgrade:dry": "npx @strapi/upgrade latest --dry",
+    "import:skills": "node ./scripts/import-skills.js",
+    "seed:skills": "node ./scripts/seed-skills.js"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.33.0",
-    "@strapi/plugin-users-permissions": "5.33.0",
-    "@strapi/strapi": "5.33.0",
-    "better-sqlite3": "12.4.1",
+    "@strapi/plugin-users-permissions": "^5.36.0",
+    "@strapi/strapi": "^5.36.0",
+    "better-sqlite3": "^12.6.2",
     "fs-extra": "^10.0.0",
     "mime-types": "^2.1.27",
     "pg": "^8.17.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-router-dom": "^6.0.0",
+    "react-router-dom": "^6.30.3",
     "styled-components": "^6.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.38.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^9.38.0",
+    "globals": "^16.4.0",
     "typescript": "^5"
   },
   "engines": {
@@ -41,5 +51,16 @@
   "strapi": {
     "uuid": "7cc78115-d959-4af2-86a4-2b611eae3061",
     "installId": "dba987456c48fe2cb453ce959c6028505360ea5f68e4efb521d177b792c6e090"
+  },
+  "overrides": {
+    "@casl/ability": "^6.7.4",
+    "@remix-run/router": "^1.23.2",
+    "axios": "^1.13.5",
+    "esbuild": "^0.25.0",
+    "lodash": "^4.17.22",
+    "markdown-it": "^14.1.1",
+    "qs": "^6.14.2",
+    "tar": "^7.5.8",
+    "tmp": "^0.2.4"
   }
 }

@@ -11,6 +11,75 @@ export interface SharedMedia extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedNavigationChild extends Struct.ComponentSchema {
+  collectionName: 'components_shared_navigation_children';
+  info: {
+    displayName: 'Navigation Child';
+  };
+  attributes: {
+    group: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    icon: Schema.Attribute.String;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    target: Schema.Attribute.Enumeration<['_self', '_blank']>;
+  };
+}
+
+export interface SharedNavigationColumn extends Struct.ComponentSchema {
+  collectionName: 'components_shared_navigation_columns';
+  info: {
+    displayName: 'Navigation Column';
+  };
+  attributes: {
+    links: Schema.Attribute.Component<'shared.navigation-link', true>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedNavigationLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_navigation_links';
+  info: {
+    displayName: 'Navigation Link';
+  };
+  attributes: {
+    children: Schema.Attribute.Component<'shared.navigation-child', true>;
+    group: Schema.Attribute.String;
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    icon: Schema.Attribute.String;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer;
+    target: Schema.Attribute.Enumeration<['_self', '_blank']>;
+  };
+}
+
+export interface SharedPlatformLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_platform_links';
+  info: {
+    displayName: 'Platform Link';
+  };
+  attributes: {
+    platform: Schema.Attribute.Enumeration<
+      ['apple', 'spotify', 'youtube', 'substack', 'twitter']
+    >;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedPodcastDistribution extends Struct.ComponentSchema {
+  collectionName: 'components_shared_podcast_distributions';
+  info: {
+    displayName: 'Podcast Distribution';
+  };
+  attributes: {
+    applePodcastUrl: Schema.Attribute.String;
+    spotifyUrl: Schema.Attribute.String;
+    substackUrl: Schema.Attribute.String;
+    twitterUrl: Schema.Attribute.String;
+    youtubeUrl: Schema.Attribute.String;
+  };
+}
+
 export interface SharedQuote extends Struct.ComponentSchema {
   collectionName: 'components_shared_quotes';
   info: {
@@ -66,6 +135,11 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'shared.media': SharedMedia;
+      'shared.navigation-child': SharedNavigationChild;
+      'shared.navigation-column': SharedNavigationColumn;
+      'shared.navigation-link': SharedNavigationLink;
+      'shared.platform-link': SharedPlatformLink;
+      'shared.podcast-distribution': SharedPodcastDistribution;
       'shared.quote': SharedQuote;
       'shared.rich-text': SharedRichText;
       'shared.seo': SharedSeo;

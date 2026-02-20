@@ -1,0 +1,158 @@
+{
+  "kind": "collectionType",
+  "collectionName": "skills",
+  "info": {
+    "singularName": "skill",
+    "pluralName": "skills",
+    "displayName": "Skill"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "summary": {
+      "type": "text",
+      "maxLength": 280
+    },
+    "longDescription": {
+      "type": "richtext"
+    },
+    "category": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "status": {
+      "type": "enumeration",
+      "default": "live",
+      "enum": [
+        "live",
+        "beta",
+        "concept"
+      ]
+    },
+    "visibility": {
+      "type": "enumeration",
+      "default": "public",
+      "enum": [
+        "public",
+        "private"
+      ]
+    },
+    "source": {
+      "type": "enumeration",
+      "default": "internal",
+      "enum": [
+        "internal",
+        "external",
+        "partner"
+      ]
+    },
+    "sourceUrl": {
+      "type": "string"
+    },
+    "sourceName": {
+      "type": "string"
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "industry": {
+      "type": "string"
+    },
+    "skillType": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "text"
+    },
+    "outputs": {
+      "type": "text"
+    },
+    "prerequisites": {
+      "type": "text"
+    },
+    "toolsRequired": {
+      "type": "text"
+    },
+    "modelsSupported": {
+      "type": "text"
+    },
+    "securityNotes": {
+      "type": "text"
+    },
+    "keyBenefits": {
+      "type": "text"
+    },
+    "limitations": {
+      "type": "text"
+    },
+    "requirements": {
+      "type": "text"
+    },
+    "exampleWorkflow": {
+      "type": "text"
+    },
+    "usageCount": {
+      "type": "integer"
+    },
+    "rating": {
+      "type": "decimal"
+    },
+    "lastUpdated": {
+      "type": "datetime"
+    },
+    "docsUrl": {
+      "type": "string"
+    },
+    "demoUrl": {
+      "type": "string"
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos"
+      ]
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag"
+    },
+    "companies": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::company.company"
+    },
+    "agents": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::agent.agent"
+    },
+    "mcpServers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::mcp-server.mcp-server"
+    },
+    "useCases": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::use-case.use-case"
+    }
+  }
+}

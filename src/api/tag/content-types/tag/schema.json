@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tags",
+  "info": {
+    "singularName": "tag",
+    "pluralName": "tags",
+    "displayName": "Tag"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "podcast_episodes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::podcast-episode.podcast-episode",
+      "mappedBy": "tags"
+    },
+    "agents": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::agent.agent",
+      "mappedBy": "tags"
+    },
+    "mcp_servers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::mcp-server.mcp-server",
+      "mappedBy": "tags"
+    }
+  }
+}

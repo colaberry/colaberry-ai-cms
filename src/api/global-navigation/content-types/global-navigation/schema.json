@@ -1,0 +1,41 @@
+{
+  "kind": "singleType",
+  "collectionName": "global_navigations",
+  "info": {
+    "singularName": "global-navigation",
+    "pluralName": "global-navigations",
+    "displayName": "Global Navigation",
+    "description": "Header and footer navigation configuration"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "headerLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.navigation-link"
+    },
+    "footerColumns": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.navigation-column"
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.navigation-link"
+    },
+    "socialLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.navigation-link"
+    },
+    "legalLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.navigation-link"
+    }
+  }
+}
