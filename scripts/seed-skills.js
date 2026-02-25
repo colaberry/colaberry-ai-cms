@@ -2,6 +2,9 @@
 
 /* eslint-disable no-console */
 
+const fs = require('fs');
+const path = require('path');
+
 const SAMPLE_SKILLS = [
   {
     name: 'PDF Document Intelligence',
@@ -355,7 +358,71 @@ const SAMPLE_SKILLS = [
   },
 ];
 
+
+const CLAWHUB_SKILLS_FILE = path.resolve(__dirname, './templates/skills-clawhub-top-downloads.json');
+
+function loadClawhubTopSkills() {
+  try {
+    const raw = fs.readFileSync(CLAWHUB_SKILLS_FILE, 'utf8');
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.log(`WARN: unable to read ${CLAWHUB_SKILLS_FILE}: ${error?.message || error}`);
+    return [];
+  }
+}
+
+function toClawhubSeedSkill(item) {
+  const skillType = item.skillType || 'Development utilities';
+  const sourceUrl = `https://clawhub.ai/skills/${item.slug}`;
+  return {
+    name: item.name,
+    slug: item.slug,
+    summary: item.summary,
+    longDescription: item.longDescription,
+    category: item.category || 'ClawHub top downloads',
+    provider: item.provider || 'Unknown',
+    status: 'live',
+    visibility: 'public',
+    source: 'external',
+    sourceUrl,
+    sourceName: 'ClawHub',
+    verified: true,
+    industry: 'Cross-industry',
+    skillType,
+    inputs: 'Prompt context|goal definition',
+    outputs: 'Structured result|execution notes',
+    prerequisites: 'Configured runtime and policy controls',
+    toolsRequired: skillType,
+    modelsSupported: 'Claude Sonnet|GPT-4.1',
+    securityNotes: 'Validate tool permissions and redact sensitive output.',
+    keyBenefits: 'Faster execution and reusable workflow quality.',
+    limitations: 'Depends on source integration quality and runtime permissions.',
+    requirements: 'Access controls, monitoring, and owner review.',
+    exampleWorkflow: 'Define task; run skill; review output; publish or handoff.',
+    usageCount: Number.isFinite(item.usageCount) ? item.usageCount : null,
+    rating: Number.isFinite(item.rating) ? item.rating : null,
+    docsUrl: sourceUrl,
+    tags: Array.isArray(item.tags) ? item.tags : ['skill'],
+    companies: ['Colaberry'],
+    agents: [],
+    mcpServers: [],
+    useCases: [],
+  };
+}
+
+const ALL_SEED_SKILLS = (() => {
+  const merged = [...SAMPLE_SKILLS, ...loadClawhubTopSkills().map(toClawhubSeedSkill)];
+  const bySlug = new Map();
+  for (const skill of merged) {
+    if (!skill?.slug) continue;
+    bySlug.set(skill.slug, skill);
+  }
+  return Array.from(bySlug.values());
+})();
+
 const shouldPublish = process.argv.includes('--publish');
+const DEFAULT_SKILL_LOCALE = process.env.SKILLS_LOCALE || 'en';
 
 function slugify(value) {
   return String(value || '')
@@ -468,7 +535,8 @@ async function upsertSkill(skill) {
     agents: agentIds,
     mcpServers: mcpServerIds,
     useCases: useCaseIds,
-    ...(shouldPublish ? { publishedAt: new Date() } : {}),
+    locale: skill.locale || DEFAULT_SKILL_LOCALE,
+    ...(shouldPublish ? { publishedAt: new Date().toISOString() } : {}),
   });
 
   const existing = await strapi.db
@@ -489,8 +557,8 @@ async function upsertSkill(skill) {
 }
 
 async function seedSkills() {
-  console.log(`Seeding ${SAMPLE_SKILLS.length} skills...`);
-  for (const skill of SAMPLE_SKILLS) {
+  console.log(`Seeding ${ALL_SEED_SKILLS.length} skills...`);
+  for (const skill of ALL_SEED_SKILLS) {
     await upsertSkill(skill);
   }
 
