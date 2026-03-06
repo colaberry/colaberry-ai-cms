@@ -60,6 +60,9 @@ $RECYCLE.BIN/
 *.out
 *.pid
 
+# Keep curated CSV templates versioned
+!scripts/templates/*.template.csv
+
 
 ############################
 # Logs and databases
