@@ -13,9 +13,10 @@ const limitArgIndex = args.indexOf("--limit");
 const logFileArgIndex = args.indexOf("--log-file");
 const dryRun = args.includes("--dry-run");
 
-const baseUrl =
+const baseUrl = (
   (urlArgIndex !== -1 ? args[urlArgIndex + 1] : process.env.STRAPI_URL) ||
-  "http://localhost:1337";
+  "http://localhost:1337"
+).replace(/\/+$/, "");
 const token =
   (tokenArgIndex !== -1 ? args[tokenArgIndex + 1] : process.env.STRAPI_TOKEN) || "";
 const webhook =

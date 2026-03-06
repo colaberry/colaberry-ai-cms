@@ -117,36 +117,46 @@ async function request(path, options = {}) {
 
 async function getOrCreateTag(name) {
   const slug = slugify(name);
-  const existing = await request(`/api/tags?filters[slug][$eq]=${encodeURIComponent(slug)}`);
-  if (existing.data && existing.data.length) {
-    return existing.data[0].id;
-  }
-  if (dryRun) {
-    console.log(`DRY RUN: create tag ${name}`);
+  try {
+    const existing = await request(`/api/tags?filters[slug][$eq]=${encodeURIComponent(slug)}`);
+    if (existing.data && existing.data.length) {
+      return existing.data[0].id;
+    }
+    if (dryRun) {
+      console.log(`DRY RUN: create tag ${name}`);
+      return null;
+    }
+    const created = await request(`/api/tags`, {
+      method: "POST",
+      body: JSON.stringify({ data: { name, slug } }),
+    });
+    return created.data?.id || null;
+  } catch (err) {
+    console.warn(`Warning: tag creation failed for "${name}": ${err.message}`);
     return null;
   }
-  const created = await request(`/api/tags`, {
-    method: "POST",
-    body: JSON.stringify({ data: { name, slug } }),
-  });
-  return created.data?.id || null;
 }
 
 async function getOrCreateCompany(name) {
   const slug = slugify(name);
-  const existing = await request(`/api/companies?filters[slug][$eq]=${encodeURIComponent(slug)}`);
-  if (existing.data && existing.data.length) {
-    return existing.data[0].id;
-  }
-  if (dryRun) {
-    console.log(`DRY RUN: create company ${name}`);
+  try {
+    const existing = await request(`/api/companies?filters[slug][$eq]=${encodeURIComponent(slug)}`);
+    if (existing.data && existing.data.length) {
+      return existing.data[0].id;
+    }
+    if (dryRun) {
+      console.log(`DRY RUN: create company ${name}`);
+      return null;
+    }
+    const created = await request(`/api/companies`, {
+      method: "POST",
+      body: JSON.stringify({ data: { name, slug } }),
+    });
+    return created.data?.id || null;
+  } catch (err) {
+    console.warn(`Warning: company creation failed for "${name}": ${err.message}`);
     return null;
   }
-  const created = await request(`/api/companies`, {
-    method: "POST",
-    body: JSON.stringify({ data: { name, slug } }),
-  });
-  return created.data?.id || null;
 }
 
 function normalizeRow(row, headers) {
@@ -240,7 +250,7 @@ async function importRow(typeKey, row, headers) {
   );
 
   if (existing.data && existing.data.length) {
-    const id = existing.data[0].id;
+    const id = existing.data[0].documentId || existing.data[0].id;
     try {
       await request(`${endpoint}/${id}`, {
         method: "PUT",
@@ -269,7 +279,7 @@ async function importRow(typeKey, row, headers) {
         `${endpoint}?publicationState=preview&filters[slug][$eq]=${encodeURIComponent(payload.slug)}`
       );
       if (retry.data && retry.data.length) {
-        const id = retry.data[0].id;
+        const id = retry.data[0].documentId || retry.data[0].id;
         try {
           await request(`${endpoint}/${id}`, {
             method: "PUT",
