@@ -701,8 +701,8 @@ async function upsertServer(record) {
   }
 
   if (existing.data && existing.data.length) {
-    const id = existing.data[0].id;
-    const existingAttrs = existing.data[0].attributes || {};
+    const id = existing.data[0].documentId || existing.data[0].id;
+    const existingAttrs = existing.data[0].attributes || existing.data[0] || {};
     const existingTags = existingAttrs?.tags?.data || [];
     const updatePayload = {};
 
@@ -757,7 +757,7 @@ async function upsertServer(record) {
         )}`
       );
       if (retry.data && retry.data.length) {
-        const id = retry.data[0].id;
+        const id = retry.data[0].documentId || retry.data[0].id;
         try {
           await requestWithFallback("PUT", `/api/mcp-servers/${id}`, payload);
           console.log(`Updated mcp ${payload.slug} after unique conflict`);
