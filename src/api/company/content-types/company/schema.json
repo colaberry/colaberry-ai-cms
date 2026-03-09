@@ -33,6 +33,20 @@
     "website": {
       "type": "string"
     },
+    "companyType": {
+      "type": "enumeration",
+      "enum": [
+        "platform",
+        "vendor",
+        "partner",
+        "other"
+      ],
+      "default": "other"
+    },
+    "description": {
+      "type": "text",
+      "maxLength": 280
+    },
     "podcast_episodes": {
       "type": "relation",
       "relation": "manyToMany",

@@ -166,6 +166,30 @@
       "target": "api::use-case.use-case",
       "mappedBy": "mcpServers"
     },
+    "linkedTools": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tool.tool",
+      "mappedBy": "mcpServers"
+    },
+    "installCommand": {
+      "type": "text"
+    },
+    "configSnippet": {
+      "type": "text"
+    },
+    "version": {
+      "type": "string"
+    },
+    "transportType": {
+      "type": "string"
+    },
+    "registrySource": {
+      "type": "string"
+    },
+    "lastSyncedAt": {
+      "type": "datetime"
+    },
     "seo": {
       "type": "component",
       "repeatable": false,

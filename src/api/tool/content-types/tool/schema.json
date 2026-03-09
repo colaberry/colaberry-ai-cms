@@ -1,0 +1,74 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tools",
+  "info": {
+    "singularName": "tool",
+    "pluralName": "tools",
+    "displayName": "Tool",
+    "description": "End tools and services that MCP servers connect to"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "maxLength": 280
+    },
+    "longDescription": {
+      "type": "richtext"
+    },
+    "toolCategory": {
+      "type": "enumeration",
+      "enum": [
+        "communication",
+        "database",
+        "storage",
+        "email",
+        "project-management",
+        "crm",
+        "developer",
+        "analytics",
+        "marketing",
+        "productivity",
+        "ai-ml",
+        "search",
+        "version-control",
+        "cloud",
+        "other"
+      ],
+      "default": "other"
+    },
+    "website": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "mcpServers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::mcp-server.mcp-server",
+      "inversedBy": "linkedTools"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}
