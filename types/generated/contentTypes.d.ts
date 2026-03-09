@@ -809,9 +809,17 @@ export interface ApiCompanyCompany extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::case-study.case-study'
     >;
+    companyType: Schema.Attribute.Enumeration<
+      ['platform', 'vendor', 'partner', 'other']
+    > &
+      Schema.Attribute.DefaultTo<'other'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -978,6 +986,7 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     category: Schema.Attribute.String;
     companies: Schema.Attribute.Relation<'manyToMany', 'api::company.company'>;
     compatibility: Schema.Attribute.Text;
+    configSnippet: Schema.Attribute.Text;
     coverImage: Schema.Attribute.Media<'images' | 'files' | 'videos'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -990,10 +999,13 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     exampleWorkflow: Schema.Attribute.Text;
     hostingOptions: Schema.Attribute.Text;
     industry: Schema.Attribute.String;
+    installCommand: Schema.Attribute.Text;
     keyBenefits: Schema.Attribute.Text;
     language: Schema.Attribute.String;
+    lastSyncedAt: Schema.Attribute.DateTime;
     lastUpdated: Schema.Attribute.DateTime;
     limitations: Schema.Attribute.Text;
+    linkedTools: Schema.Attribute.Relation<'manyToMany', 'api::tool.tool'>;
     linkedUseCases: Schema.Attribute.Relation<
       'manyToMany',
       'api::use-case.use-case'
@@ -1012,6 +1024,7 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     rating: Schema.Attribute.Decimal;
     registryName: Schema.Attribute.String;
+    registrySource: Schema.Attribute.String;
     requirements: Schema.Attribute.Text;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     serverType: Schema.Attribute.String;
@@ -1025,6 +1038,7 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
       Schema.Attribute.DefaultTo<'live'>;
     tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
     tools: Schema.Attribute.Text;
+    transportType: Schema.Attribute.String;
     tryItNowUrl: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1032,8 +1046,43 @@ export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
     usageCount: Schema.Attribute.Integer;
     useCases: Schema.Attribute.Text;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    version: Schema.Attribute.String;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
+  };
+}
+
+export interface ApiMcpTelemetryEventMcpTelemetryEvent
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'mcp_telemetry_events';
+  info: {
+    displayName: 'MCP Telemetry Event';
+    pluralName: 'mcp-telemetry-events';
+    singularName: 'mcp-telemetry-event';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    clientName: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    latencyMs: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::mcp-telemetry-event.mcp-telemetry-event'
+    > &
+      Schema.Attribute.Private;
+    mcpServerSlug: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    success: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    timestamp: Schema.Attribute.DateTime;
+    toolName: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1393,6 +1442,65 @@ export interface ApiTagTag extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::use-case.use-case'
     >;
+  };
+}
+
+export interface ApiToolTool extends Struct.CollectionTypeSchema {
+  collectionName: 'tools';
+  info: {
+    description: 'End tools and services that MCP servers connect to';
+    displayName: 'Tool';
+    pluralName: 'tools';
+    singularName: 'tool';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
+    icon: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::tool.tool'> &
+      Schema.Attribute.Private;
+    longDescription: Schema.Attribute.RichText;
+    mcpServers: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::mcp-server.mcp-server'
+    >;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    toolCategory: Schema.Attribute.Enumeration<
+      [
+        'communication',
+        'database',
+        'storage',
+        'email',
+        'project-management',
+        'crm',
+        'developer',
+        'analytics',
+        'marketing',
+        'productivity',
+        'ai-ml',
+        'search',
+        'version-control',
+        'cloud',
+        'other',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'other'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    website: Schema.Attribute.String;
   };
 }
 
@@ -1986,6 +2094,7 @@ declare module '@strapi/strapi' {
       'api::global.global': ApiGlobalGlobal;
       'api::import-job.import-job': ApiImportJobImportJob;
       'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
+      'api::mcp-telemetry-event.mcp-telemetry-event': ApiMcpTelemetryEventMcpTelemetryEvent;
       'api::newsletter-subscriber.newsletter-subscriber': ApiNewsletterSubscriberNewsletterSubscriber;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
       'api::podcast-import.podcast-import': ApiPodcastImportPodcastImport;
@@ -1993,6 +2102,7 @@ declare module '@strapi/strapi' {
       'api::skill-import.skill-import': ApiSkillImportSkillImport;
       'api::skill.skill': ApiSkillSkill;
       'api::tag.tag': ApiTagTag;
+      'api::tool.tool': ApiToolTool;
       'api::use-case.use-case': ApiUseCaseUseCase;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

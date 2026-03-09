@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "mcp_telemetry_events",
+  "info": {
+    "singularName": "mcp-telemetry-event",
+    "pluralName": "mcp-telemetry-events",
+    "displayName": "MCP Telemetry Event"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "mcpServerSlug": {
+      "type": "string",
+      "required": true
+    },
+    "toolName": {
+      "type": "string",
+      "required": true
+    },
+    "clientName": {
+      "type": "string"
+    },
+    "latencyMs": {
+      "type": "integer"
+    },
+    "success": {
+      "type": "boolean",
+      "default": true
+    },
+    "timestamp": {
+      "type": "datetime"
+    }
+  }
+}
