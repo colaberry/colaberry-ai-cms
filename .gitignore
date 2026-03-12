@@ -135,4 +135,5 @@ database/
 .cache/
 build
 .strapi-updater.json
+.strapi-updater*.json
 .strapi-cloud.json
