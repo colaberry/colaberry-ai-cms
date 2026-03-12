@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { Core } from '@strapi/strapi';
 import { runImportDispatch } from '../../services/csv-import';
+import { isUrlAllowed, isSafeLocalPath } from '../../../../lib/safe-fetch';
 
 declare const strapi: Core.Strapi;
 
@@ -46,7 +47,9 @@ async function readCsvFromMedia(media: ImportJob['csvFile']) {
   if (!url) return null;
 
   if (url.startsWith('/')) {
-    const localPath = path.join(process.cwd(), 'public', url);
+    const baseDir = path.join(process.cwd(), 'public');
+    const localPath = path.join(baseDir, url);
+    if (!isSafeLocalPath(baseDir, url)) return null;
     try {
       return await fs.readFile(localPath, 'utf8');
     } catch {
@@ -55,6 +58,7 @@ async function readCsvFromMedia(media: ImportJob['csvFile']) {
   }
 
   if (/^https?:\/\//i.test(url)) {
+    if (!isUrlAllowed(url)) return null;
     const response = await fetch(url);
     if (!response.ok) return null;
     return response.text();
@@ -67,6 +71,7 @@ async function readCsvFromSourceUrl(sourceUrl: string | null | undefined) {
   const value = String(sourceUrl || '').trim();
   if (!value) return null;
   if (!/^https?:\/\//i.test(value)) return null;
+  if (!isUrlAllowed(value)) return null;
 
   const response = await fetch(value);
   if (!response.ok) return null;
