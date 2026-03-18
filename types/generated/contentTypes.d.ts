@@ -1330,6 +1330,48 @@ export interface ApiSkillImportSkillImport extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSkillCollectionSkillCollection
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'skill_collections';
+  info: {
+    displayName: 'Skill Collection';
+    pluralName: 'skill-collections';
+    singularName: 'skill-collection';
+    description: 'Curated bundles of skills that work together for real-world scenarios';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    category: Schema.Attribute.String;
+    coverImageUrl: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.MaxLength<500>;
+    difficulty: Schema.Attribute.Enumeration<
+      ['beginner', 'intermediate', 'advanced']
+    > &
+      Schema.Attribute.DefaultTo<'intermediate'>;
+    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    keywordTags: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::skill-collection.skill-collection'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    skills: Schema.Attribute.Relation<'manyToMany', 'api::skill.skill'>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    sortOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiSkillSkill extends Struct.CollectionTypeSchema {
   collectionName: 'skills';
   info: {
@@ -1393,6 +1435,7 @@ export interface ApiSkillSkill extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     usageCount: Schema.Attribute.Integer;
     useCases: Schema.Attribute.Relation<'manyToMany', 'api::use-case.use-case'>;
+    skillCollections: Schema.Attribute.Relation<'manyToMany', 'api::skill-collection.skill-collection'>;
     verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     visibility: Schema.Attribute.Enumeration<['public', 'private']> &
       Schema.Attribute.DefaultTo<'public'>;
@@ -2099,6 +2142,7 @@ declare module '@strapi/strapi' {
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
       'api::podcast-import.podcast-import': ApiPodcastImportPodcastImport;
       'api::podcast-log.podcast-log': ApiPodcastLogPodcastLog;
+      'api::skill-collection.skill-collection': ApiSkillCollectionSkillCollection;
       'api::skill-import.skill-import': ApiSkillImportSkillImport;
       'api::skill.skill': ApiSkillSkill;
       'api::tag.tag': ApiTagTag;
