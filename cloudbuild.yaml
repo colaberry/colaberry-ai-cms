@@ -1,0 +1,64 @@
+# Cloud Build — colaberry-ai-cms Strapi backend (Release-1.0)
+# Trigger: Push to Release-1.0 branch
+# Deploys to Cloud Run service: colaberry-ai-cms-prod
+
+steps:
+  # Build Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/colaberry-ai-cms:${SHORT_SHA}"
+      - "-t"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/colaberry-ai-cms:latest"
+      - "."
+
+  # Push to Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "--all-tags"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/colaberry-ai-cms"
+
+  # Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "${_SERVICE_NAME}"
+      - "--image"
+      - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/colaberry-ai-cms:${SHORT_SHA}"
+      - "--region"
+      - "${_REGION}"
+      - "--platform"
+      - "managed"
+      - "--port"
+      - "1337"
+      - "--memory"
+      - "1Gi"
+      - "--cpu"
+      - "1"
+      - "--min-instances"
+      - "1"
+      - "--max-instances"
+      - "2"
+      - "--concurrency"
+      - "50"
+      - "--timeout"
+      - "300"
+      - "--allow-unauthenticated"
+      - "--set-env-vars"
+      - "NODE_ENV=production,HOST=0.0.0.0,PORT=1337"
+
+substitutions:
+  _REGION: us-east1
+  _REPO: colaberry-ai-repo
+  _SERVICE_NAME: colaberry-ai-cms-prod
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+images:
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/colaberry-ai-cms:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/colaberry-ai-cms:latest"
