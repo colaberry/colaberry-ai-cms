@@ -38,6 +38,12 @@
     },
     "description": {
       "type": "text"
+    },
+    "departments": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::department.department",
+      "mappedBy": "category"
     }
   }
 }
