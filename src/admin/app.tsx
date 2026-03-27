@@ -47,6 +47,14 @@ export default {
 
     // --- English only ---
     locales: [],
+
+    // --- Custom translations: remove Strapi branding ---
+    translations: {
+      en: {
+        'Auth.form.welcome.title': 'Welcome to Colaberry AI',
+        'Auth.form.welcome.subtitle': 'Log in to your CMS',
+      },
+    },
   },
 
   bootstrap(app: StrapiApp) {
