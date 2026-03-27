@@ -164,6 +164,12 @@
       "relation": "manyToMany",
       "target": "api::mcp-server.mcp-server"
     },
+    "department": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::department.department",
+      "inversedBy": "agents"
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
