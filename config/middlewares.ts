@@ -8,8 +8,23 @@ export default [
         useDefaults: true,
         directives: {
           'script-src': ["'self'"],
-          'img-src': ["'self'", 'data:', 'blob:', 'market-assets.strapi.io'],
+          'img-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            'market-assets.strapi.io',
+            'cdn.auth0.com',
+            `${process.env.AUTH0_DOMAIN ? `https://${process.env.AUTH0_DOMAIN}` : ''}`,
+          ].filter(Boolean),
           'media-src': ["'self'", 'data:', 'blob:', 'market-assets.strapi.io'],
+          'connect-src': [
+            "'self'",
+            `${process.env.AUTH0_DOMAIN ? `https://${process.env.AUTH0_DOMAIN}` : ''}`,
+          ].filter(Boolean),
+          'frame-src': [
+            "'self'",
+            `${process.env.AUTH0_DOMAIN ? `https://${process.env.AUTH0_DOMAIN}` : ''}`,
+          ].filter(Boolean),
           upgradeInsecureRequests: null,
         },
       },
