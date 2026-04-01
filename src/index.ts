@@ -1,4 +1,4 @@
-// import type { Core } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi';
 
 export default {
   /**
@@ -7,7 +7,13 @@ export default {
    *
    * This gives you an opportunity to extend code.
    */
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register({ strapi }: { strapi: Core.Strapi }) {
+    // Trust Cloud Run / GCP load balancer proxy headers (X-Forwarded-Proto, etc.)
+    // Required for koa-session to set secure cookies behind TLS-terminating proxy
+    if (process.env.NODE_ENV === 'production') {
+      strapi.server.app.proxy = true;
+    }
+  },
 
   /**
    * An asynchronous bootstrap function that runs before
