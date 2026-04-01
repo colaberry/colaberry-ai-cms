@@ -1,6 +1,36 @@
 export default [
   'strapi::logger',
   'strapi::errors',
+  // Rate limiting — admin login (brute force protection)
+  {
+    name: 'global::rate-limit',
+    config: {
+      name: 'admin-login',
+      max: 5,
+      windowMs: 60_000, // 5 requests per minute
+      pathPrefix: '/admin/login',
+    },
+  },
+  // Rate limiting — SSO OIDC initiation
+  {
+    name: 'global::rate-limit',
+    config: {
+      name: 'sso-oidc',
+      max: 10,
+      windowMs: 60_000, // 10 requests per minute
+      pathPrefix: '/strapi-plugin-sso',
+    },
+  },
+  // Rate limiting — public content API
+  {
+    name: 'global::rate-limit',
+    config: {
+      name: 'content-api',
+      max: 100,
+      windowMs: 60_000, // 100 requests per minute
+      pathPrefix: '/api/',
+    },
+  },
   {
     name: 'strapi::security',
     config: {
