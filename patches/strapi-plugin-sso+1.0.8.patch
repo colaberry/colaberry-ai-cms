@@ -1,0 +1,13 @@
+diff --git a/node_modules/strapi-plugin-sso/dist/_chunks/index-CS4Z6DuF.mjs b/node_modules/strapi-plugin-sso/dist/_chunks/index-CS4Z6DuF.mjs
+index 7eae9d9..0608515 100644
+--- a/node_modules/strapi-plugin-sso/dist/_chunks/index-CS4Z6DuF.mjs
++++ b/node_modules/strapi-plugin-sso/dist/_chunks/index-CS4Z6DuF.mjs
+@@ -208,7 +208,7 @@ function SuccessAlertMessage({ onClose: onClose2 }) {
+     }
+   ) });
+ }
+-function ErrorAlertMessage() {
++function ErrorAlertMessage({ onClose }) {
+   const { formatMessage } = useIntl();
+   return /* @__PURE__ */ jsx(AlertMessage, { children: /* @__PURE__ */ jsx(
+     Alert,

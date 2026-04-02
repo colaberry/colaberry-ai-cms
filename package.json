@@ -21,10 +21,12 @@
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
     "import:skills": "node ./scripts/import-skills.js",
-    "seed:skills": "node ./scripts/seed-skills.js"
+    "seed:skills": "node ./scripts/seed-skills.js",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@strapi/plugin-users-permissions": "^5.36.0",
+    "patch-package": "^8.0.0",
     "@strapi/strapi": "^5.36.0",
     "better-sqlite3": "^12.6.2",
     "fs-extra": "^10.0.0",
