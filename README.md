@@ -1,61 +1,75 @@
-# 🚀 Getting started with Strapi
+# Colaberry AI CMS
 
-Strapi comes with a full featured [Command Line Interface](https://docs.strapi.io/dev-docs/cli) (CLI) which lets you scaffold and manage your project in seconds.
+Headless CMS built with Strapi v5, powering colaberry.ai content. Deployed on GCP Cloud Run.
 
-### `develop`
+## Prerequisites
 
-Start your Strapi application with autoReload enabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-develop)
+- Node.js 20+
+- Docker (optional, for containerized development with PostgreSQL)
 
-```
+## Quick Start
+
+```bash
+npm install
 npm run develop
-# or
-yarn develop
 ```
 
-### `start`
+Open [http://localhost:1337/admin](http://localhost:1337/admin).
 
-Start your Strapi application with autoReload disabled. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-start)
+By default, Strapi uses SQLite for local development. No database setup required.
 
-```
-npm run start
-# or
-yarn start
-```
+## Docker (with PostgreSQL)
 
-### `build`
-
-Build your admin panel. [Learn more](https://docs.strapi.io/dev-docs/cli#strapi-build)
-
-```
-npm run build
-# or
-yarn build
+```bash
+docker compose up
 ```
 
-## ⚙️ Deployment
+This starts Strapi + PostgreSQL 16. CMS available at [http://localhost:1337](http://localhost:1337).
 
-Strapi gives you many possible deployment options for your project including [Strapi Cloud](https://cloud.strapi.io). Browse the [deployment section of the documentation](https://docs.strapi.io/dev-docs/deployment) to find the best solution for your use case.
-
-```
-yarn strapi deploy
+```bash
+docker compose down -v  # Stop and remove volumes
 ```
 
-## 📚 Learn more
+## Environment Variables
 
-- [Resource center](https://strapi.io/resource-center) - Strapi resource center.
-- [Strapi documentation](https://docs.strapi.io) - Official Strapi documentation.
-- [Strapi tutorials](https://strapi.io/tutorials) - List of tutorials made by the core team and the community.
-- [Strapi blog](https://strapi.io/blog) - Official Strapi blog containing articles made by the Strapi team and the community.
-- [Changelog](https://strapi.io/changelog) - Find out about the Strapi product updates, new features and general improvements.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_CLIENT` | `sqlite` | Database client (`sqlite` or `postgres`) |
+| `DATABASE_HOST` | — | PostgreSQL host (Docker: `db`) |
+| `DATABASE_PORT` | `5432` | PostgreSQL port |
+| `DATABASE_NAME` | — | Database name |
+| `DATABASE_USERNAME` | — | Database user |
+| `DATABASE_PASSWORD` | — | Database password |
+| `HOST` | `0.0.0.0` | Strapi listen host |
+| `PORT` | `1337` | Strapi listen port |
+| `AUTH0_DOMAIN` | — | Auth0 domain for SSO |
+| `AUTH0_CLIENT_ID` | — | Auth0 client ID |
+| `AUTH0_CLIENT_SECRET` | — | Auth0 client secret |
 
-Feel free to check out the [Strapi GitHub repository](https://github.com/strapi/strapi). Your feedback and contributions are welcome!
+## Content Types
 
-## ✨ Community
+- **Agents** — AI agent catalog entries
+- **MCP Servers** — Model Context Protocol server listings
+- **Skills** — AI skill definitions (16,900+)
+- **Podcasts** — Episode metadata and transcripts
+- **Tools** — AI tool catalog
+- **Use Cases** — Industry use case writeups
+- **Industries** — Industry vertical definitions
+- **Collections** — Curated content groupings
 
-- [Discord](https://discord.strapi.io) - Come chat with the Strapi community including the core team.
-- [Forum](https://forum.strapi.io/) - Place to discuss, ask questions and find answers, show your Strapi project and get feedback or just talk with other Community members.
-- [Awesome Strapi](https://github.com/strapi/awesome-strapi) - A curated list of awesome things related to Strapi.
+## Branch Strategy
 
----
+| Branch | Deploys to | Service |
+|--------|-----------|---------|
+| `Release-1.0.beta` | dev CMS | `colaberry-ai-cms` |
+| `Release-1.0` | prod CMS | `colaberry-ai-cms-prod` |
 
-<sub>🤫 Psst! [Strapi is hiring](https://strapi.io/careers).</sub>
+Pushes to these branches trigger Cloud Build automatically.
+
+## Build
+
+```bash
+npm run build    # Build admin panel
+npm run start    # Start production server
+npm run develop  # Start with auto-reload
+```
