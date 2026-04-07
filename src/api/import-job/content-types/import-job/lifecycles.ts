@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { Core } from '@strapi/strapi';
 import { runImportDispatch } from '../../services/csv-import';
-import { isUrlAllowed, isSafeLocalPath } from '../../../../lib/safe-fetch';
+import { isUrlAllowed, isUrlSafe, isSafeLocalPath } from '../../../../lib/safe-fetch';
 
 declare const strapi: Core.Strapi;
 
@@ -40,6 +40,8 @@ function toBoolean(value: unknown, fallback: boolean) {
   return fallback;
 }
 
+const MAX_CSV_BYTES = 5 * 1024 * 1024; // 5 MB
+
 async function readCsvFromMedia(media: ImportJob['csvFile']) {
   if (!media) return null;
 
@@ -51,6 +53,8 @@ async function readCsvFromMedia(media: ImportJob['csvFile']) {
     const localPath = path.join(baseDir, url);
     if (!isSafeLocalPath(baseDir, url)) return null;
     try {
+      const stat = await fs.stat(localPath);
+      if (stat.size > MAX_CSV_BYTES) return null;
       return await fs.readFile(localPath, 'utf8');
     } catch {
       return null;
@@ -58,10 +62,14 @@ async function readCsvFromMedia(media: ImportJob['csvFile']) {
   }
 
   if (/^https?:\/\//i.test(url)) {
-    if (!isUrlAllowed(url)) return null;
+    if (!(await isUrlSafe(url))) return null;
     const response = await fetch(url);
     if (!response.ok) return null;
-    return response.text();
+    const contentLength = Number(response.headers.get('content-length') || 0);
+    if (contentLength > MAX_CSV_BYTES) return null;
+    const text = await response.text();
+    if (text.length > MAX_CSV_BYTES) return null;
+    return text;
   }
 
   return null;
@@ -71,11 +79,15 @@ async function readCsvFromSourceUrl(sourceUrl: string | null | undefined) {
   const value = String(sourceUrl || '').trim();
   if (!value) return null;
   if (!/^https?:\/\//i.test(value)) return null;
-  if (!isUrlAllowed(value)) return null;
+  if (!(await isUrlSafe(value))) return null;
 
   const response = await fetch(value);
   if (!response.ok) return null;
-  return response.text();
+  const contentLength = Number(response.headers.get('content-length') || 0);
+  if (contentLength > MAX_CSV_BYTES) return null;
+  const text = await response.text();
+  if (text.length > MAX_CSV_BYTES) return null;
+  return text;
 }
 
 async function loadJob(jobId: number): Promise<ImportJob | null> {
@@ -132,6 +144,10 @@ async function processImportJob(jobId: number) {
 
     if (!csvText) {
       throw new Error('CSV input missing. Provide csvText, csvFile, or sourceUrl.');
+    }
+
+    if (csvText.length > MAX_CSV_BYTES) {
+      throw new Error(`CSV exceeds ${MAX_CSV_BYTES / 1024 / 1024}MB size limit.`);
     }
 
     const result = await runImportDispatch(strapi, {
