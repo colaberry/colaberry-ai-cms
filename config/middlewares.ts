@@ -21,6 +21,26 @@ export default [
       pathPrefix: '/strapi-plugin-sso',
     },
   },
+  // Rate limiting — telemetry ingestion (tighter limit to prevent flooding)
+  {
+    name: 'global::rate-limit',
+    config: {
+      name: 'telemetry',
+      max: 20,
+      windowMs: 60_000, // 20 requests per minute
+      pathPrefix: '/api/mcp-telemetry-events',
+    },
+  },
+  // Rate limiting — podcast log ingestion
+  {
+    name: 'global::rate-limit',
+    config: {
+      name: 'podcast-log',
+      max: 20,
+      windowMs: 60_000, // 20 requests per minute
+      pathPrefix: '/api/podcast-logs',
+    },
+  },
   // Rate limiting — public content API
   {
     name: 'global::rate-limit',
@@ -68,6 +88,7 @@ export default [
         : ['http://localhost:3000'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      credentials: false,
       keepHeaderOnError: true,
     },
   },

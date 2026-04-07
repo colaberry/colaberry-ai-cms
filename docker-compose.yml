@@ -12,9 +12,9 @@ services:
       DATABASE_CLIENT: postgres
       DATABASE_HOST: db
       DATABASE_PORT: 5432
-      DATABASE_NAME: strapi
-      DATABASE_USERNAME: strapi
-      DATABASE_PASSWORD: strapi
+      DATABASE_NAME: ${DATABASE_NAME:-strapi}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-strapi}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-strapi}
       HOST: 0.0.0.0
       PORT: 1337
     volumes:
@@ -31,9 +31,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: strapi
-      POSTGRES_USER: strapi
-      POSTGRES_PASSWORD: strapi
+      POSTGRES_DB: ${DATABASE_NAME:-strapi}
+      POSTGRES_USER: ${DATABASE_USERNAME:-strapi}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-strapi}
     ports:
       - "5434:5432"
     volumes:
