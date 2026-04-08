@@ -1169,6 +1169,46 @@ export interface ApiNewsletterSubscriberNewsletterSubscriber
   };
 }
 
+export interface ApiPodcastSubscriberPodcastSubscriber
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'podcast_subscribers';
+  info: {
+    displayName: 'Podcast Subscriber';
+    pluralName: 'podcast-subscribers';
+    singularName: 'podcast-subscriber';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::podcast-subscriber.podcast-subscriber'
+    > &
+      Schema.Attribute.Private;
+    metadata: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    sourcePage: Schema.Attribute.String;
+    sourcePath: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['subscribed', 'unsubscribed', 'bounced']
+    > &
+      Schema.Attribute.DefaultTo<'subscribed'>;
+    subscribedAt: Schema.Attribute.DateTime;
+    unsubscribedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiPodcastEpisodePodcastEpisode
   extends Struct.CollectionTypeSchema {
   collectionName: 'podcast_episodes';
@@ -2270,6 +2310,7 @@ declare module '@strapi/strapi' {
       'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
       'api::mcp-telemetry-event.mcp-telemetry-event': ApiMcpTelemetryEventMcpTelemetryEvent;
       'api::newsletter-subscriber.newsletter-subscriber': ApiNewsletterSubscriberNewsletterSubscriber;
+      'api::podcast-subscriber.podcast-subscriber': ApiPodcastSubscriberPodcastSubscriber;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
       'api::podcast-import.podcast-import': ApiPodcastImportPodcastImport;
       'api::podcast-log.podcast-log': ApiPodcastLogPodcastLog;
