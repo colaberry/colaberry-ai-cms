@@ -1129,6 +1129,57 @@ export interface ApiMcpTelemetryEventMcpTelemetryEvent
   };
 }
 
+export interface ApiDemoRequestDemoRequest
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'demo_requests';
+  info: {
+    description: 'Leads submitted via /request-demo page and homepage Guided booking modal. Written by the frontend /api/demo-request endpoint before email delivery so leads are durable even if email fails.';
+    displayName: 'Demo Request';
+    pluralName: 'demo-requests';
+    singularName: 'demo-request';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    company: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    deliveryAttemptedAt: Schema.Attribute.DateTime;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    emailDelivered: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    emailError: Schema.Attribute.Text;
+    emailProvider: Schema.Attribute.String;
+    ipHash: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::demo-request.demo-request'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text;
+    metadata: Schema.Attribute.JSON;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    requestId: Schema.Attribute.String;
+    role: Schema.Attribute.String;
+    sourcePage: Schema.Attribute.String;
+    sourcePath: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['new', 'contacted', 'qualified', 'closed', 'spam']
+    > &
+      Schema.Attribute.DefaultTo<'new'>;
+    teamSize: Schema.Attribute.String;
+    timeline: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    userAgentHash: Schema.Attribute.String;
+  };
+}
+
 export interface ApiNewsletterSubscriberNewsletterSubscriber
   extends Struct.CollectionTypeSchema {
   collectionName: 'newsletter_subscribers';
@@ -2303,6 +2354,7 @@ declare module '@strapi/strapi' {
       'api::case-study.case-study': ApiCaseStudyCaseStudy;
       'api::category.category': ApiCategoryCategory;
       'api::company.company': ApiCompanyCompany;
+      'api::demo-request.demo-request': ApiDemoRequestDemoRequest;
       'api::department.department': ApiDepartmentDepartment;
       'api::global-navigation.global-navigation': ApiGlobalNavigationGlobalNavigation;
       'api::global.global': ApiGlobalGlobal;
