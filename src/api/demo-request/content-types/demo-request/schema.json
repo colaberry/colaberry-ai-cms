@@ -1,0 +1,94 @@
+{
+  "kind": "collectionType",
+  "collectionName": "demo_requests",
+  "info": {
+    "singularName": "demo-request",
+    "pluralName": "demo-requests",
+    "displayName": "Demo Request",
+    "description": "Leads submitted via /request-demo page and homepage Guided booking modal. Written by the frontend /api/demo-request endpoint before email delivery so leads are durable even if email fails."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "company": {
+      "type": "string",
+      "maxLength": 200
+    },
+    "role": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "teamSize": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "timeline": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "message": {
+      "type": "text",
+      "maxLength": 8000
+    },
+    "sourcePage": {
+      "type": "string",
+      "maxLength": 160
+    },
+    "sourcePath": {
+      "type": "string",
+      "maxLength": 320
+    },
+    "status": {
+      "type": "enumeration",
+      "default": "new",
+      "enum": [
+        "new",
+        "contacted",
+        "qualified",
+        "closed",
+        "spam"
+      ]
+    },
+    "emailDelivered": {
+      "type": "boolean",
+      "default": false
+    },
+    "emailProvider": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "emailError": {
+      "type": "text",
+      "maxLength": 2000
+    },
+    "deliveryAttemptedAt": {
+      "type": "datetime"
+    },
+    "requestId": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "ipHash": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "userAgentHash": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "metadata": {
+      "type": "json"
+    }
+  }
+}

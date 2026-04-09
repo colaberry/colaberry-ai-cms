@@ -7,7 +7,7 @@
 - **Database:** SQLite (dev via better-sqlite3), PostgreSQL (production via pg)
 - **Deployment:** Docker
 
-## Content Types (20 total)
+## Content Types (21 total)
 
 ### Core Catalog
 | Content Type   | API ID                           | Key Relations                        |
@@ -33,6 +33,7 @@
 | Content Type          | API ID                                       |
 |-----------------------|----------------------------------------------|
 | Newsletter Subscriber | `api::newsletter-subscriber.newsletter-subscriber` |
+| Demo Request          | `api::demo-request.demo-request`             |
 | Podcast Import        | `api::podcast-import.podcast-import`         |
 | Import Job            | `api::import-job.import-job`                 |
 | Skill Import          | `api::skill-import.skill-import`             |
@@ -40,6 +41,8 @@
 | Global (single)       | `api::global.global`                         |
 | About (single)        | `api::about.about`                           |
 | Global Navigation     | `api::global-navigation.global-navigation`   |
+
+**Demo Request** is written by the frontend `/api/demo-request` handler before it attempts email delivery (via `src/lib/demoRequestStore.ts` in the colaberry-ai-fork repo). The record is then updated with delivery outcome (`emailDelivered`, `emailProvider`, `emailError`, `deliveryAttemptedAt`) so sales-ops can triage failed deliveries. `status` defaults to `new` and can be advanced to `contacted` / `qualified` / `closed` / `spam` from the admin UI. Bearer-token auth only — the frontend uses `CMS_API_TOKEN`; there are no public Strapi permissions on this collection.
 
 ## Shared Components
 - `shared.seo` — metaTitle, metaDescription, shareImage
