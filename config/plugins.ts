@@ -10,7 +10,7 @@ export default ({ env }) => ({
     },
   },
   'strapi-plugin-sso': {
-    enabled: true,
+    enabled: env.bool('SSO_ENABLED', false),
     config: {
       // OpenID Connect — Auth0
       OIDC_REDIRECT_URI: env(

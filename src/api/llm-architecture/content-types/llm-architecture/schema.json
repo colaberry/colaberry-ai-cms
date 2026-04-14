@@ -1,0 +1,91 @@
+{
+  "kind": "collectionType",
+  "collectionName": "llm_architectures",
+  "info": {
+    "singularName": "llm-architecture",
+    "pluralName": "llm-architectures",
+    "displayName": "LLM Architecture",
+    "description": "Large Language Model architecture specifications from the LLM Architecture Gallery"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "organization": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "maxLength": 280
+    },
+    "longDescription": {
+      "type": "richtext"
+    },
+    "parameters": {
+      "type": "string",
+      "required": true
+    },
+    "activeParameters": {
+      "type": "string"
+    },
+    "contextWindow": {
+      "type": "string",
+      "required": true
+    },
+    "vocabSize": {
+      "type": "string"
+    },
+    "releaseDate": {
+      "type": "string",
+      "required": true
+    },
+    "decoderType": {
+      "type": "enumeration",
+      "enum": ["Dense", "MoE", "Hybrid", "Recurrent"],
+      "required": true
+    },
+    "attention": {
+      "type": "string",
+      "required": true
+    },
+    "keyFeatures": {
+      "type": "json"
+    },
+    "configUrl": {
+      "type": "string"
+    },
+    "paperUrl": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": "enumeration",
+      "default": "public",
+      "enum": ["public", "private"]
+    },
+    "verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::tag.tag"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

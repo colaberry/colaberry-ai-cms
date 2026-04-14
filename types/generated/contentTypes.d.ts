@@ -861,6 +861,96 @@ export interface ApiCompanyCompany extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiDemoRequestDemoRequest extends Struct.CollectionTypeSchema {
+  collectionName: 'demo_requests';
+  info: {
+    description: 'Leads submitted via /request-demo page and homepage Guided booking modal. Written by the frontend /api/demo-request endpoint before email delivery so leads are durable even if email fails.';
+    displayName: 'Demo Request';
+    pluralName: 'demo-requests';
+    singularName: 'demo-request';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    company: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    deliveryAttemptedAt: Schema.Attribute.DateTime;
+    email: Schema.Attribute.Email & Schema.Attribute.Required;
+    emailDelivered: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    emailError: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 2000;
+      }>;
+    emailProvider: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+    ipHash: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::demo-request.demo-request'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 8000;
+      }>;
+    metadata: Schema.Attribute.JSON;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    requestId: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 64;
+      }>;
+    role: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    sourcePage: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    sourcePath: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 320;
+      }>;
+    status: Schema.Attribute.Enumeration<
+      ['new', 'contacted', 'qualified', 'closed', 'spam']
+    > &
+      Schema.Attribute.DefaultTo<'new'>;
+    teamSize: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    timeline: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    userAgentHash: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+  };
+}
+
 export interface ApiDepartmentDepartment extends Struct.CollectionTypeSchema {
   collectionName: 'departments';
   info: {
@@ -1013,6 +1103,61 @@ export interface ApiImportJobImportJob extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLlmArchitectureLlmArchitecture
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'llm_architectures';
+  info: {
+    description: 'Large Language Model architecture specifications from the LLM Architecture Gallery';
+    displayName: 'LLM Architecture';
+    pluralName: 'llm-architectures';
+    singularName: 'llm-architecture';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    activeParameters: Schema.Attribute.String;
+    attention: Schema.Attribute.String & Schema.Attribute.Required;
+    configUrl: Schema.Attribute.String;
+    contextWindow: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    decoderType: Schema.Attribute.Enumeration<
+      ['Dense', 'MoE', 'Hybrid', 'Recurrent']
+    > &
+      Schema.Attribute.Required;
+    description: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 280;
+      }>;
+    keyFeatures: Schema.Attribute.JSON;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::llm-architecture.llm-architecture'
+    > &
+      Schema.Attribute.Private;
+    longDescription: Schema.Attribute.RichText;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    organization: Schema.Attribute.String & Schema.Attribute.Required;
+    paperUrl: Schema.Attribute.String;
+    parameters: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    releaseDate: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    tags: Schema.Attribute.Relation<'manyToMany', 'api::tag.tag'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    verified: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    visibility: Schema.Attribute.Enumeration<['public', 'private']> &
+      Schema.Attribute.DefaultTo<'public'>;
+    vocabSize: Schema.Attribute.String;
+  };
+}
+
 export interface ApiMcpServerMcpServer extends Struct.CollectionTypeSchema {
   collectionName: 'mcp_servers';
   info: {
@@ -1129,57 +1274,6 @@ export interface ApiMcpTelemetryEventMcpTelemetryEvent
   };
 }
 
-export interface ApiDemoRequestDemoRequest
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'demo_requests';
-  info: {
-    description: 'Leads submitted via /request-demo page and homepage Guided booking modal. Written by the frontend /api/demo-request endpoint before email delivery so leads are durable even if email fails.';
-    displayName: 'Demo Request';
-    pluralName: 'demo-requests';
-    singularName: 'demo-request';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    company: Schema.Attribute.String;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    deliveryAttemptedAt: Schema.Attribute.DateTime;
-    email: Schema.Attribute.Email & Schema.Attribute.Required;
-    emailDelivered: Schema.Attribute.Boolean &
-      Schema.Attribute.DefaultTo<false>;
-    emailError: Schema.Attribute.Text;
-    emailProvider: Schema.Attribute.String;
-    ipHash: Schema.Attribute.String;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::demo-request.demo-request'
-    > &
-      Schema.Attribute.Private;
-    message: Schema.Attribute.Text;
-    metadata: Schema.Attribute.JSON;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    requestId: Schema.Attribute.String;
-    role: Schema.Attribute.String;
-    sourcePage: Schema.Attribute.String;
-    sourcePath: Schema.Attribute.String;
-    status: Schema.Attribute.Enumeration<
-      ['new', 'contacted', 'qualified', 'closed', 'spam']
-    > &
-      Schema.Attribute.DefaultTo<'new'>;
-    teamSize: Schema.Attribute.String;
-    timeline: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    userAgentHash: Schema.Attribute.String;
-  };
-}
-
 export interface ApiNewsletterSubscriberNewsletterSubscriber
   extends Struct.CollectionTypeSchema {
   collectionName: 'newsletter_subscribers';
@@ -1202,46 +1296,6 @@ export interface ApiNewsletterSubscriberNewsletterSubscriber
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::newsletter-subscriber.newsletter-subscriber'
-    > &
-      Schema.Attribute.Private;
-    metadata: Schema.Attribute.JSON;
-    publishedAt: Schema.Attribute.DateTime;
-    sourcePage: Schema.Attribute.String;
-    sourcePath: Schema.Attribute.String;
-    status: Schema.Attribute.Enumeration<
-      ['subscribed', 'unsubscribed', 'bounced']
-    > &
-      Schema.Attribute.DefaultTo<'subscribed'>;
-    subscribedAt: Schema.Attribute.DateTime;
-    unsubscribedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiPodcastSubscriberPodcastSubscriber
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'podcast_subscribers';
-  info: {
-    displayName: 'Podcast Subscriber';
-    pluralName: 'podcast-subscribers';
-    singularName: 'podcast-subscriber';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    email: Schema.Attribute.Email &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::podcast-subscriber.podcast-subscriber'
     > &
       Schema.Attribute.Private;
     metadata: Schema.Attribute.JSON;
@@ -1416,6 +1470,46 @@ export interface ApiPodcastLogPodcastLog extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     url: Schema.Attribute.String;
     userAgent: Schema.Attribute.Text;
+  };
+}
+
+export interface ApiPodcastSubscriberPodcastSubscriber
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'podcast_subscribers';
+  info: {
+    displayName: 'Podcast Subscriber';
+    pluralName: 'podcast-subscribers';
+    singularName: 'podcast-subscriber';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::podcast-subscriber.podcast-subscriber'
+    > &
+      Schema.Attribute.Private;
+    metadata: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    sourcePage: Schema.Attribute.String;
+    sourcePath: Schema.Attribute.String;
+    status: Schema.Attribute.Enumeration<
+      ['subscribed', 'unsubscribed', 'bounced']
+    > &
+      Schema.Attribute.DefaultTo<'subscribed'>;
+    subscribedAt: Schema.Attribute.DateTime;
+    unsubscribedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1991,87 +2085,6 @@ export interface PluginReviewWorkflowsWorkflowStage
   };
 }
 
-export interface PluginStrapiPluginSsoRoles
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'strapi-plugin-sso_roles';
-  info: {
-    collectionName: 'sso-roles';
-    description: '';
-    displayName: 'sso-role';
-    pluralName: 'sso-roles';
-    singularName: 'roles';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'plugin::strapi-plugin-sso.roles'
-    > &
-      Schema.Attribute.Private;
-    oauth_type: Schema.Attribute.String & Schema.Attribute.Required;
-    publishedAt: Schema.Attribute.DateTime;
-    roles: Schema.Attribute.JSON;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface PluginStrapiPluginSsoWhitelists
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'strapi-plugin-sso_whitelists';
-  info: {
-    collectionName: 'whitelists';
-    description: '';
-    displayName: 'whitelist';
-    pluralName: 'whitelists';
-    singularName: 'whitelists';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: false;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    email: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'plugin::strapi-plugin-sso.whitelists'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface PluginUploadFile extends Struct.CollectionTypeSchema {
   collectionName: 'files';
   info: {
@@ -2359,13 +2372,14 @@ declare module '@strapi/strapi' {
       'api::global-navigation.global-navigation': ApiGlobalNavigationGlobalNavigation;
       'api::global.global': ApiGlobalGlobal;
       'api::import-job.import-job': ApiImportJobImportJob;
+      'api::llm-architecture.llm-architecture': ApiLlmArchitectureLlmArchitecture;
       'api::mcp-server.mcp-server': ApiMcpServerMcpServer;
       'api::mcp-telemetry-event.mcp-telemetry-event': ApiMcpTelemetryEventMcpTelemetryEvent;
       'api::newsletter-subscriber.newsletter-subscriber': ApiNewsletterSubscriberNewsletterSubscriber;
-      'api::podcast-subscriber.podcast-subscriber': ApiPodcastSubscriberPodcastSubscriber;
       'api::podcast-episode.podcast-episode': ApiPodcastEpisodePodcastEpisode;
       'api::podcast-import.podcast-import': ApiPodcastImportPodcastImport;
       'api::podcast-log.podcast-log': ApiPodcastLogPodcastLog;
+      'api::podcast-subscriber.podcast-subscriber': ApiPodcastSubscriberPodcastSubscriber;
       'api::skill-collection.skill-collection': ApiSkillCollectionSkillCollection;
       'api::skill-import.skill-import': ApiSkillImportSkillImport;
       'api::skill.skill': ApiSkillSkill;
@@ -2377,8 +2391,6 @@ declare module '@strapi/strapi' {
       'plugin::i18n.locale': PluginI18NLocale;
       'plugin::review-workflows.workflow': PluginReviewWorkflowsWorkflow;
       'plugin::review-workflows.workflow-stage': PluginReviewWorkflowsWorkflowStage;
-      'plugin::strapi-plugin-sso.roles': PluginStrapiPluginSsoRoles;
-      'plugin::strapi-plugin-sso.whitelists': PluginStrapiPluginSsoWhitelists;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
