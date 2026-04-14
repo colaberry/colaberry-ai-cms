@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_deep_paragraphs",
+  "info": {
+    "displayName": "Paragraph",
+    "icon": "align-justify",
+    "description": "Body paragraph with markdown/richtext support."
+  },
+  "options": {},
+  "attributes": {
+    "body": {
+      "type": "richtext",
+      "required": true
+    }
+  }
+}

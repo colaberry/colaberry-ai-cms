@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_deep_headings",
+  "info": {
+    "displayName": "Heading",
+    "icon": "header",
+    "description": "Section heading (h2/h3/h4) with optional anchor for deep-dive table of contents."
+  },
+  "options": {},
+  "attributes": {
+    "level": {
+      "type": "enumeration",
+      "enum": ["h2", "h3", "h4"],
+      "default": "h2",
+      "required": true
+    },
+    "text": {
+      "type": "string",
+      "required": true
+    },
+    "anchor": {
+      "type": "string"
+    }
+  }
+}
