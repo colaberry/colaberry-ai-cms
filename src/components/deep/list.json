@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_deep_lists",
+  "info": {
+    "displayName": "List",
+    "icon": "list-ul",
+    "description": "Bulleted or numbered list. Items is a JSON array of strings (markdown supported)."
+  },
+  "options": {},
+  "attributes": {
+    "style": {
+      "type": "enumeration",
+      "enum": ["bullet", "number"],
+      "default": "bullet",
+      "required": true
+    },
+    "items": {
+      "type": "json",
+      "required": true
+    }
+  }
+}

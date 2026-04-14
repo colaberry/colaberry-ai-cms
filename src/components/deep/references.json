@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_deep_references",
+  "info": {
+    "displayName": "References",
+    "icon": "link",
+    "description": "Final references list. Items is a JSON array of { label, url } objects cited in the deep dive."
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "References"
+    },
+    "items": {
+      "type": "json",
+      "required": true
+    }
+  }
+}

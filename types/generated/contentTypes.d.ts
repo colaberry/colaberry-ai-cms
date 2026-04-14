@@ -1127,6 +1127,18 @@ export interface ApiLlmArchitectureLlmArchitecture
       ['Dense', 'MoE', 'Hybrid', 'Recurrent']
     > &
       Schema.Attribute.Required;
+    deepDive: Schema.Attribute.DynamicZone<
+      [
+        'deep.heading',
+        'deep.paragraph',
+        'deep.callout',
+        'deep.code-block',
+        'deep.table',
+        'deep.list',
+        'deep.image',
+        'deep.references',
+      ]
+    >;
     description: Schema.Attribute.Text &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 280;

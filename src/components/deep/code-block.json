@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_deep_code_blocks",
+  "info": {
+    "displayName": "Code Block",
+    "icon": "code",
+    "description": "Monospace code snippet with language tag and optional caption."
+  },
+  "options": {},
+  "attributes": {
+    "language": {
+      "type": "string",
+      "default": "text"
+    },
+    "code": {
+      "type": "text",
+      "required": true
+    },
+    "caption": {
+      "type": "string"
+    }
+  }
+}
