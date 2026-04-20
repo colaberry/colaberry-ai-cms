@@ -86,6 +86,19 @@
       "type": "component",
       "repeatable": false,
       "component": "shared.seo"
+    },
+    "deepDive": {
+      "type": "dynamiczone",
+      "components": [
+        "deep.heading",
+        "deep.paragraph",
+        "deep.callout",
+        "deep.code-block",
+        "deep.table",
+        "deep.list",
+        "deep.image",
+        "deep.references"
+      ]
     }
   }
 }

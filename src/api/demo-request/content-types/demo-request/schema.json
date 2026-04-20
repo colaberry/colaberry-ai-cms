@@ -14,8 +14,8 @@
   "attributes": {
     "name": {
       "type": "string",
-      "required": true,
-      "maxLength": 200
+      "maxLength": 200,
+      "required": true
     },
     "email": {
       "type": "email",
@@ -89,6 +89,10 @@
     },
     "metadata": {
       "type": "json"
+    },
+    "phone": {
+      "type": "string",
+      "maxLength": 64
     }
   }
 }

@@ -262,11 +262,68 @@ async function wipeAllMCPs() {
   console.log(`Wipe complete. Deleted ${totalDeleted} MCP servers.`);
 }
 
+// --- pre-fetched caches (populated by preloadCaches() at startup) ---
+// Both maps let the sync job upsert each mcp with 0 lookup requests
+// instead of ~3 (was the primary driver of the rate-limit 429s).
+
+/** Map<slug, id> — existing tags */
+const tagCache = new Map();
+/** Map<registryName|slug, {documentId, slug, attrs}> — existing mcp-servers */
+const mcpCache = new Map();
+
+async function preloadCaches() {
+  console.log("Preloading tag + mcp-server caches...");
+  // --- Tags ---
+  let page = 1;
+  let tagTotal = 0;
+  while (true) {
+    const res = await request(
+      `/api/tags?pagination[page]=${page}&pagination[pageSize]=100&fields[0]=slug&fields[1]=name`
+    );
+    const items = res?.data || [];
+    if (!items.length) break;
+    for (const item of items) {
+      const slug = item.attributes?.slug || item.slug;
+      if (slug) tagCache.set(slug, item.id);
+    }
+    tagTotal += items.length;
+    const pageCount = res?.meta?.pagination?.pageCount;
+    if (pageCount && page >= pageCount) break;
+    page += 1;
+  }
+
+  // --- MCP servers ---
+  page = 1;
+  let mcpTotal = 0;
+  while (true) {
+    const res = await request(
+      `/api/mcp-servers?publicationState=preview&pagination[page]=${page}&pagination[pageSize]=100&populate[tags][fields][0]=name`
+    );
+    const items = res?.data || [];
+    if (!items.length) break;
+    for (const item of items) {
+      const attrs = item.attributes || item;
+      const documentId = item.documentId || item.id;
+      const entry = { id: item.id, documentId, attrs };
+      // index by registryName and slug for fast lookup
+      const registryName = attrs.registryName || null;
+      const slug = attrs.slug || null;
+      if (registryName) mcpCache.set(`r:${registryName}`, entry);
+      if (slug) mcpCache.set(`s:${slug}`, entry);
+    }
+    mcpTotal += items.length;
+    const pageCount = res?.meta?.pagination?.pageCount;
+    if (pageCount && page >= pageCount) break;
+    page += 1;
+  }
+
+  console.log(`Preload complete. Tags: ${tagTotal}, MCPs: ${mcpTotal}`);
+}
+
 async function getOrCreateTag(name) {
   const slug = slugify(name);
-  const existing = await request(`/api/tags?filters[slug][$eq]=${encodeURIComponent(slug)}`);
-  if (existing.data && existing.data.length) {
-    return existing.data[0].id;
+  if (tagCache.has(slug)) {
+    return tagCache.get(slug);
   }
   if (dryRun) {
     console.log(`DRY RUN: create tag ${name}`);
@@ -276,7 +333,9 @@ async function getOrCreateTag(name) {
     method: "POST",
     body: JSON.stringify({ data: { name, slug } }),
   });
-  return created.data?.id || null;
+  const id = created.data?.id || null;
+  if (id) tagCache.set(slug, id); // keep cache warm
+  return id;
 }
 
 function pickFirst(...values) {
@@ -684,26 +743,19 @@ async function upsertServer(record) {
     return;
   }
 
-  const primaryKey = payload.registryName ? "registryName" : "slug";
-  const primaryValue = payload.registryName || payload.slug;
-  let existing = await request(
-    `/api/mcp-servers?publicationState=preview&filters[${primaryKey}][$eq]=${encodeURIComponent(
-      primaryValue
-    )}&populate[tags][fields][0]=name`
-  );
-
-  if ((!existing.data || !existing.data.length) && payload.registryName) {
-    existing = await request(
-      `/api/mcp-servers?publicationState=preview&filters[slug][$eq]=${encodeURIComponent(
-        payload.slug
-      )}&populate[tags][fields][0]=name`
-    );
+  // Look up existing mcp-server via pre-fetched cache (see preloadCaches())
+  // Order: registryName first, then slug fallback — same semantics as before.
+  let cachedEntry = null;
+  if (payload.registryName && mcpCache.has(`r:${payload.registryName}`)) {
+    cachedEntry = mcpCache.get(`r:${payload.registryName}`);
+  } else if (mcpCache.has(`s:${payload.slug}`)) {
+    cachedEntry = mcpCache.get(`s:${payload.slug}`);
   }
 
-  if (existing.data && existing.data.length) {
-    const id = existing.data[0].documentId || existing.data[0].id;
-    const existingAttrs = existing.data[0].attributes || existing.data[0] || {};
-    const existingTags = existingAttrs?.tags?.data || [];
+  if (cachedEntry) {
+    const id = cachedEntry.documentId || cachedEntry.id;
+    const existingAttrs = cachedEntry.attrs || {};
+    const existingTags = existingAttrs?.tags?.data || existingAttrs?.tags || [];
     const updatePayload = {};
 
     Object.entries(payload).forEach(([key, value]) => {
@@ -732,6 +784,7 @@ async function upsertServer(record) {
     } catch (err) {
       if (String(err.message || "").includes("404")) {
         console.log(`Existing mcp ${payload.slug} not found on update. Recreating.`);
+        // fall through to create path below
       } else {
         throw err;
       }
@@ -747,29 +800,18 @@ async function upsertServer(record) {
   try {
     await requestWithFallback("POST", `/api/mcp-servers`, payload);
     console.log(`Created mcp ${payload.slug}`);
+    // Warm the cache so a duplicate in the same run falls to the update path
+    const fakeEntry = { id: null, documentId: null, attrs: { ...payload, tags: { data: [] } } };
+    if (payload.registryName) mcpCache.set(`r:${payload.registryName}`, fakeEntry);
+    if (payload.slug) mcpCache.set(`s:${payload.slug}`, fakeEntry);
   } catch (err) {
+    // Unique-constraint conflict = the cache was stale (another writer,
+    // or a row was created between preload and now). This is rare now
+    // that we preload upfront; if it happens, log and skip rather than
+    // re-querying (which would re-introduce rate-limit pressure).
     if (String(err.message || "").includes("unique")) {
-      const retryKey = payload.registryName ? "registryName" : "slug";
-      const retryValue = payload.registryName || payload.slug;
-      const retry = await request(
-        `/api/mcp-servers?publicationState=preview&filters[${retryKey}][$eq]=${encodeURIComponent(
-          retryValue
-        )}`
-      );
-      if (retry.data && retry.data.length) {
-        const id = retry.data[0].documentId || retry.data[0].id;
-        try {
-          await requestWithFallback("PUT", `/api/mcp-servers/${id}`, payload);
-          console.log(`Updated mcp ${payload.slug} after unique conflict`);
-          return;
-        } catch (updateErr) {
-          if (String(updateErr.message || "").includes("404")) {
-            console.log(`MCP ${payload.slug} disappeared during update. Skipping.`);
-            return;
-          }
-          throw updateErr;
-        }
-      }
+      console.log(`Skipped ${payload.slug}: unique conflict (cache was stale).`);
+      return;
     }
     throw err;
   }
@@ -778,6 +820,9 @@ async function upsertServer(record) {
 async function run() {
   if (wipeExisting) {
     await wipeAllMCPs();
+  }
+  if (!dryRun) {
+    await preloadCaches();
   }
   let cursor;
   let total = 0;

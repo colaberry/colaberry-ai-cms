@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_deep_images",
+  "info": {
+    "displayName": "Image",
+    "icon": "picture-o",
+    "description": "Figure with caption and alt text. Used for architecture diagrams and training charts."
+  },
+  "options": {},
+  "attributes": {
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "caption": {
+      "type": "string"
+    },
+    "alt": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

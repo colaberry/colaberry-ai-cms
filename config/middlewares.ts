@@ -42,13 +42,20 @@ export default [
     },
   },
   // Rate limiting — public content API
+  // NOTE: `skipAuthenticated: true` means this 100 req/min cap only applies
+  // to anonymous/unauthenticated callers (public scrapers, AI crawlers).
+  // Server-to-server callers that send `Authorization: Bearer <token>` are
+  // exempt — this is required for the nightly mcp-registry-sync job, the
+  // buzzsprout-sync scheduler, and the Next.js frontend's server-side
+  // fetches to run without being throttled.
   {
     name: 'global::rate-limit',
     config: {
       name: 'content-api',
       max: 100,
-      windowMs: 60_000, // 100 requests per minute
+      windowMs: 60_000, // 100 requests per minute (unauthenticated only)
       pathPrefix: '/api/',
+      skipAuthenticated: true,
     },
   },
   {
