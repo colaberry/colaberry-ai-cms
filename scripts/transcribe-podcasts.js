@@ -324,16 +324,36 @@ async function transcribeWithWebhook(audioUrl, attrs) {
   };
 }
 
+const BROWSER_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
 async function transcribeWithDeepgram(audioUrl) {
+  // Some media hosts (e.g. Buzzsprout, fronted by Cloudflare) return 403 to
+  // Deepgram's own URL fetcher. Download the audio ourselves with a browser
+  // User-Agent and upload the bytes to Deepgram, instead of passing the URL.
+  const audioRes = await fetch(audioUrl, {
+    headers: {
+      "User-Agent": BROWSER_UA,
+      Accept: "audio/mpeg,audio/*;q=0.9,*/*;q=0.8",
+    },
+  });
+  if (!audioRes.ok) {
+    const detail = await audioRes.text().catch(() => "");
+    throw new Error(
+      `Failed to fetch audio (${audioRes.status}): ${detail.slice(0, 200)}`
+    );
+  }
+  const audioContentType = audioRes.headers.get("content-type") || "audio/mpeg";
+  const audioBuffer = Buffer.from(await audioRes.arrayBuffer());
   const res = await fetch(
     "https://api.deepgram.com/v1/listen?punctuate=true&paragraphs=true&utterances=true&timestamps=true&smart_format=true&model=nova-2",
     {
       method: "POST",
       headers: {
         Authorization: `Token ${deepgramKey}`,
-        "Content-Type": "application/json",
+        "Content-Type": audioContentType,
       },
-      body: JSON.stringify({ url: audioUrl }),
+      body: audioBuffer,
     }
   );
   if (!res.ok) {
@@ -352,7 +372,9 @@ async function transcribeWithDeepgram(audioUrl) {
 }
 
 async function transcribeWithOpenAI(audioUrl) {
-  const audioRes = await fetch(audioUrl);
+  const audioRes = await fetch(audioUrl, {
+    headers: { "User-Agent": BROWSER_UA },
+  });
   if (!audioRes.ok) {
     const text = await audioRes.text();
     throw new Error(text || "Failed to fetch audio");
