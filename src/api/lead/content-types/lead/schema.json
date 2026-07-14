@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "leads",
+  "info": {
+    "singularName": "lead",
+    "pluralName": "leads",
+    "displayName": "Lead",
+    "description": "Captured email leads from the global login + demos. colaberry.ai /auth/verify writes here on every sign-in. The email is the #1 goal; each capture is one row — dedupe downstream by email + createdAt."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "ipHash": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "userAgent": {
+      "type": "text"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["new", "contacted", "qualified", "archived"],
+      "default": "new"
+    }
+  }
+}
